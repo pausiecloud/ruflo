@@ -1,64 +1,45 @@
-# Armenio Trip Coach (Web móvil)
+# Armenio Path
 
-Mini app web estilo Duolingo para preparar un viaje de 10 días en Armenia.
+Mini app web tipo Duolingo para aprender armenio con un mapa de unidades y lecciones reales.
 
-## ¿Se puede probar con un enlace directo en el navegador?
+## Qué incluye
 
-Sí.
+- Mapa de curso con desbloqueo progresivo.
+- Ejercicios de elección múltiple, completar frases, ordenar palabras y voz.
+- Corazones, XP, racha y coronas por lección.
+- Progreso persistente en `localStorage`.
 
-### Opción A (más simple, mismo equipo)
-Pega este enlace en tu navegador:
-
-```text
-file:///workspace/ruflo/apps/armenio-duolingo-web/index.html
-```
-
-## Enlace público temporal (copiar y pegar en iPhone desde cualquier red)
-
-```bash
-cd apps/armenio-duolingo-web
-./run-public.sh
-```
-
-El script crea un túnel y te mostrará una URL pública `https://...` para abrir directamente en Safari.
-
-## Deploy en GitHub Pages (link final estable)
-
-Se añadió el workflow `.github/workflows/armenio-pages.yml`.  
-Cuando el repo tenga remoto en GitHub y hagas push a `main`, el link final quedará así:
-
-```text
-https://<USUARIO>.github.io/<REPO>/
-```
-
-Ejemplo:
-
-```text
-https://octocat.github.io/ruflo/
-```
-
-### Opción B (móvil en la misma red Wi‑Fi)
-1. Levanta un servidor local:
-
-```bash
-cd apps/armenio-duolingo-web
-./run-local.sh
-```
-
-2. Copia y pega en el navegador del móvil el enlace que imprime el script (por ejemplo `http://192.168.1.34:4173`).
-
-## Ejecutar manualmente
+## Probarlo en local
 
 ```bash
 cd apps/armenio-duolingo-web
 python3 -m http.server 4173
 ```
 
-Abre `http://localhost:4173` en tu navegador.
+Abre `http://localhost:4173` en el navegador.
 
-## Funciones
+## Probarlo desde iPhone
 
-- Ruta de 10 días con desbloqueo progresivo.
-- Tarjetas de práctica de frases esenciales.
-- Mini quiz con puntuación.
-- Progreso persistente en `localStorage`.
+### Opción A: misma Wi-Fi
+
+1. Ejecuta el servidor local.
+2. Abre la IP que imprime el script o el servidor, por ejemplo `http://192.168.1.34:4173`.
+
+### Opción B: enlace público temporal
+
+```bash
+cd apps/armenio-duolingo-web
+./run-public.sh
+```
+
+El script levanta un túnel y te devuelve una URL `https://...` para abrir en Safari.
+
+## Enlace estable
+
+El proyecto está preparado para GitHub Pages con el workflow `.github/workflows/armenio-pages.yml`.
+
+Cuando el repo se publique en `main`, el enlace estable será:
+
+```text
+https://pausiecloud.github.io/ruflo/
+```

@@ -3,420 +3,2684 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Armenio Trip Coach · 10 días</title>
+    <title>Armenio Path · Lecciones</title>
+    <meta name="theme-color" content="#2dc95d" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232dc95d'/%3E%3Cpath d='M18 34l8 8 20-24' fill='none' stroke='white' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
     <style>
       :root {
-        --bg: #f7f7f7;
-        --card: #ffffff;
-        --ink: #222;
-        --muted: #6b7280;
-        --green: #58cc02;
-        --green-dark: #46a302;
-        --blue: #1cb0f6;
-        --orange: #ff9600;
+        --bg: #eef9f0;
+        --bg-2: #dff6e7;
+        --panel: rgba(255, 255, 255, 0.92);
+        --panel-solid: #ffffff;
+        --ink: #163024;
+        --muted: #5d7266;
+        --accent: #2dc95d;
+        --accent-dark: #1e9f49;
+        --accent-soft: rgba(45, 201, 93, 0.12);
+        --sky: #6ad9ff;
+        --sun: #ffc94d;
+        --danger: #ff5d68;
+        --danger-soft: rgba(255, 93, 104, 0.12);
+        --line: rgba(22, 48, 36, 0.11);
+        --shadow: 0 22px 70px rgba(22, 48, 36, 0.14);
+        --radius-xl: 30px;
+        --radius-lg: 24px;
+        --radius-md: 18px;
       }
 
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         margin: 0;
-        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        background: linear-gradient(180deg, #f8fff2 0%, var(--bg) 45%);
+        min-height: 100vh;
         color: var(--ink);
+        font-family: "Avenir Next", "Avenir", "Trebuchet MS", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 10% 0%, rgba(255, 201, 77, 0.28), transparent 24%),
+          radial-gradient(circle at 88% 10%, rgba(106, 217, 255, 0.22), transparent 20%),
+          linear-gradient(180deg, #f8fff9 0%, var(--bg) 42%, #eaf8ef 100%);
       }
 
-      .app {
-        max-width: 560px;
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(rgba(22, 48, 36, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(22, 48, 36, 0.03) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 86%);
+      }
+
+      .shell {
+        width: min(1240px, calc(100vw - 24px));
         margin: 0 auto;
-        min-height: 100dvh;
-        padding: 14px 12px 90px;
+        padding: 16px 0 28px;
+        display: grid;
+        gap: 16px;
       }
 
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: rgba(247, 247, 247, 0.88);
-        backdrop-filter: blur(6px);
-        border-radius: 14px;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        gap: 8px;
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        gap: 16px;
+      }
+
+      .hero-copy,
+      .hero-card,
+      .map-panel,
+      .player-panel {
+        padding: 22px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 10px 12px;
-      }
-
-      .badge {
+        gap: 8px;
+        padding: 8px 12px;
         border-radius: 999px;
-        padding: 6px 10px;
+        background: rgba(45, 201, 93, 0.12);
+        color: var(--accent-dark);
+        font-weight: 900;
         font-size: 12px;
-        font-weight: 700;
-        color: #fff;
-      }
-      .b-green { background: var(--green); }
-      .b-blue { background: var(--blue); }
-      .b-orange { background: var(--orange); }
-
-      .card {
-        margin-top: 12px;
-        background: var(--card);
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 14px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
       }
 
-      h1, h2, h3, p { margin: 0; }
-      h1 { font-size: 20px; margin-bottom: 4px; }
-      h2 { font-size: 17px; margin-bottom: 8px; }
-      h3 { font-size: 15px; margin-bottom: 6px; }
-      .muted { color: var(--muted); font-size: 13px; }
+      .hero-copy h1 {
+        margin: 12px 0 10px;
+        font-size: clamp(30px, 4vw, 52px);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
 
-      .path {
-        margin-top: 10px;
+      .hero-copy p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        max-width: 62ch;
+      }
+
+      .hero-progress {
+        margin-top: 18px;
         display: grid;
-        gap: 12px;
-      }
-
-      .day {
-        display: grid;
-        grid-template-columns: 54px 1fr;
         gap: 10px;
-        align-items: stretch;
       }
 
-      .day-btn {
-        border: none;
-        cursor: pointer;
-        border-radius: 50%;
-        width: 54px;
-        height: 54px;
-        font-size: 17px;
-        font-weight: 800;
-        color: #fff;
-        box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.15);
-      }
-      .locked { background: #cbd5e1; cursor: not-allowed; }
-      .open { background: var(--green); }
-      .done { background: var(--blue); }
-
-      .lesson-card {
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 10px;
-        background: #fff;
-      }
-
-      .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-      .chip {
-        font-size: 12px;
-        background: #ecfdf5;
-        color: #1f7a44;
-        border: 1px solid #b9f8d2;
+      .progress-track,
+      .lesson-track {
+        position: relative;
+        height: 12px;
         border-radius: 999px;
-        padding: 5px 9px;
+        background: rgba(22, 48, 36, 0.08);
+        overflow: hidden;
+      }
+
+      .progress-fill,
+      .lesson-track > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #2dc95d, #1da050 58%, #59e07d);
+        transition: width 0.35s ease;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat {
+        padding: 14px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(22, 48, 36, 0.08);
+      }
+
+      .stat span {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 900;
+      }
+
+      .stat strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .hero-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        background: linear-gradient(180deg, rgba(45, 201, 93, 0.12), rgba(255, 255, 255, 0.95));
+      }
+
+      .hero-card h2 {
+        margin: 10px 0 8px;
+        font-size: 24px;
+        letter-spacing: -0.03em;
+      }
+
+      .hero-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid rgba(22, 48, 36, 0.08);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .pill.soft {
+        background: rgba(45, 201, 93, 0.12);
+        color: var(--accent-dark);
+      }
+
+      .pill.sky {
+        background: rgba(106, 217, 255, 0.16);
+        color: #0d6b92;
+      }
+
+      .pill.sun {
+        background: rgba(255, 201, 77, 0.18);
+        color: #8a5b00;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .hero-actions,
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
       }
 
       .btn {
         border: none;
-        border-radius: 10px;
-        padding: 10px 12px;
-        font-weight: 800;
+        border-radius: 16px;
+        padding: 12px 16px;
+        font: inherit;
+        font-weight: 900;
         cursor: pointer;
+        transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
       }
-      .btn-main { background: var(--green); color: #fff; }
-      .btn-main:active { background: var(--green-dark); }
-      .btn-soft { background: #eff6ff; color: #1451a5; }
-      .btn-ghost { background: #f3f4f6; color: #111827; }
 
-      .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-
-      .flash {
-        border: 2px dashed #c7d2fe;
-        border-radius: 12px;
-        padding: 14px;
-        text-align: center;
-        margin-top: 10px;
-        background: #f8faff;
+      .btn:hover {
+        transform: translateY(-1px);
       }
-      .arm { font-size: 26px; font-weight: 800; color: #0f172a; }
-      .tr { font-size: 16px; color: #334155; margin-top: 4px; }
 
-      .quiz-option {
-        width: 100%;
-        text-align: left;
-        margin-top: 8px;
-        border-radius: 10px;
-        border: 1px solid #d1d5db;
-        background: #fff;
-        padding: 10px;
-        cursor: pointer;
+      .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        transform: none;
       }
-      .quiz-option.ok { border-color: #4ade80; background: #f0fdf4; }
-      .quiz-option.bad { border-color: #fb7185; background: #fff1f2; }
 
-      .nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #fff;
-        border-top: 1px solid #e5e7eb;
+      .btn.primary {
+        background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+        color: #fff;
+        box-shadow: 0 14px 24px rgba(45, 201, 93, 0.22);
+      }
+
+      .btn.soft {
+        background: rgba(106, 217, 255, 0.16);
+        color: #0f668a;
+      }
+
+      .btn.ghost {
+        background: rgba(22, 48, 36, 0.06);
+        color: var(--ink);
+      }
+
+      .btn.danger {
+        background: var(--danger-soft);
+        color: #c03443;
+      }
+
+      .layout {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        max-width: 560px;
-        margin: 0 auto;
+        grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+        gap: 16px;
+        align-items: start;
       }
-      .nav button {
-        border: none;
-        background: none;
-        padding: 12px 6px;
-        font-weight: 800;
-        color: #4b5563;
-      }
-      .nav button.active { color: var(--green); }
 
-      [hidden] { display: none !important; }
+      .panel-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .panel-head h2 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+      }
+
+      .panel-head p {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+
+      .course-map {
+        display: grid;
+        gap: 14px;
+      }
+
+      .unit-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        padding: 16px;
+        border: 1px solid rgba(22, 48, 36, 0.08);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 252, 248, 0.95));
+      }
+
+      .unit-card::after {
+        content: "";
+        position: absolute;
+        right: -30px;
+        top: -30px;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(45, 201, 93, 0.18), transparent 70%);
+      }
+
+      .unit-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: start;
+      }
+
+      .unit-title {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: -0.03em;
+      }
+
+      .unit-copy {
+        color: var(--muted);
+        margin: 6px 0 0;
+      }
+
+      .unit-progress {
+        min-width: 112px;
+        text-align: right;
+      }
+
+      .unit-progress strong {
+        display: block;
+        font-size: 18px;
+      }
+
+      .unit-progress span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .unit-track {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .unit-track::before {
+        content: "";
+        position: absolute;
+        left: 41px;
+        top: 88px;
+        bottom: 22px;
+        width: 4px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(45, 201, 93, 0.25), rgba(45, 201, 93, 0.05));
+        pointer-events: none;
+      }
+
+      .lesson-node {
+        display: grid;
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 18px;
+        border: 1px solid rgba(22, 48, 36, 0.08);
+        background: rgba(255, 255, 255, 0.92);
+        text-align: left;
+        cursor: pointer;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      }
+
+      .lesson-node:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(22, 48, 36, 0.08);
+      }
+
+      .lesson-node.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: rgba(246, 250, 247, 0.8);
+      }
+
+      .lesson-node.open {
+        border-color: rgba(45, 201, 93, 0.18);
+      }
+
+      .lesson-node.active {
+        border-color: var(--accent);
+        box-shadow: 0 14px 28px rgba(45, 201, 93, 0.16);
+      }
+
+      .lesson-node.mastered {
+        border-color: rgba(45, 201, 93, 0.42);
+      }
+
+      .node-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 18px;
+        color: #fff;
+        background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+        box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      .lesson-node.locked .node-badge {
+        background: linear-gradient(180deg, #bcc9c0, #93a59a);
+      }
+
+      .lesson-node.done .node-badge {
+        background: linear-gradient(180deg, #6ad9ff, #2f94ca);
+      }
+
+      .lesson-copy strong {
+        display: block;
+        font-size: 16px;
+        letter-spacing: -0.02em;
+      }
+
+      .lesson-copy small {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+      }
+
+      .mastery {
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+
+      .mastery.c1,
+      .mastery.c2,
+      .mastery.c3 {
+        color: var(--accent-dark);
+      }
+
+      .player-panel {
+        min-height: 720px;
+      }
+
+      .lesson-preview,
+      .exercise-card,
+      .result-card,
+      .notice-card {
+        border-radius: 24px;
+        border: 1px solid rgba(22, 48, 36, 0.08);
+        background: var(--panel-solid);
+        padding: 18px;
+      }
+
+      .lesson-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .lesson-title {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .lesson-subtitle {
+        margin: 10px 0 0;
+        color: var(--muted);
+      }
+
+      .lesson-track-wrap {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .lesson-track-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .exercise-card {
+        display: grid;
+        gap: 16px;
+      }
+
+      .exercise-head {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .exercise-kind {
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .exercise-prompt {
+        margin-top: 8px;
+        font-size: clamp(20px, 3vw, 28px);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+      }
+
+      .exercise-sub {
+        margin-top: 8px;
+        color: var(--muted);
+      }
+
+      .target-card {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(45, 201, 93, 0.16);
+        background: linear-gradient(180deg, rgba(45, 201, 93, 0.08), rgba(255, 255, 255, 0.96));
+      }
+
+      .target-script {
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+      }
+
+      .target-roman {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .target-spanish {
+        margin-top: 2px;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--accent-dark);
+      }
+
+      .choice-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .choice-btn {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(22, 48, 36, 0.12);
+        background: #fff;
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+        color: var(--ink);
+        transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+      }
+
+      .choice-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .choice-btn.selected {
+        border-color: var(--accent);
+        background: rgba(45, 201, 93, 0.08);
+      }
+
+      .choice-btn.correct {
+        border-color: #35b96a;
+        background: rgba(45, 201, 93, 0.12);
+      }
+
+      .choice-btn.wrong {
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+
+      .fill-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        line-height: 1.9;
+        font-size: 18px;
+      }
+
+      .fill-input {
+        min-width: 150px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(22, 48, 36, 0.14);
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        font-weight: 800;
+        outline: none;
+      }
+
+      .fill-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(45, 201, 93, 0.12);
+      }
+
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .word-chip {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 12px;
+        background: #edf8f1;
+        border: 1px solid rgba(45, 201, 93, 0.18);
+        color: var(--ink);
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .word-chip.selected {
+        background: rgba(45, 201, 93, 0.18);
+        border-color: var(--accent);
+        color: var(--accent-dark);
+      }
+
+      .answer-tray {
+        min-height: 64px;
+        padding: 12px;
+        border-radius: 20px;
+        border: 2px dashed rgba(45, 201, 93, 0.22);
+        background: #fbfffc;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .voice-box {
+        display: grid;
+        gap: 12px;
+      }
+
+      .voice-live {
+        padding: 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(45, 201, 93, 0.16);
+        background: linear-gradient(180deg, rgba(45, 201, 93, 0.08), rgba(255, 255, 255, 0.95));
+      }
+
+      .mic-state {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 900;
+      }
+
+      .mic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 6px rgba(45, 201, 93, 0.12);
+        animation: pulse 1.6s infinite;
+      }
+
+      .voice-target {
+        margin-top: 12px;
+      }
+
+      .voice-target .target-script {
+        font-size: 24px;
+      }
+
+      .voice-target .target-spanish {
+        color: var(--muted);
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field-label {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .text-input {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid rgba(22, 48, 36, 0.14);
+        padding: 13px 14px;
+        font: inherit;
+        font-weight: 800;
+        color: var(--ink);
+        outline: none;
+        background: #fff;
+      }
+
+      .text-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(45, 201, 93, 0.12);
+      }
+
+      .feedback {
+        display: none;
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(22, 48, 36, 0.08);
+        animation: pop 0.2s ease;
+      }
+
+      .feedback.good {
+        display: block;
+        background: rgba(45, 201, 93, 0.08);
+        border-color: rgba(45, 201, 93, 0.18);
+      }
+
+      .feedback.bad {
+        display: block;
+        background: var(--danger-soft);
+        border-color: rgba(255, 93, 104, 0.18);
+      }
+
+      .feedback strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .feedback p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .result-card {
+        display: grid;
+        gap: 12px;
+      }
+
+      .result-head {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: start;
+      }
+
+      .result-head h3 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: -0.03em;
+      }
+
+      .result-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .badge-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .notice-card {
+        border-color: rgba(255, 201, 77, 0.28);
+        background: linear-gradient(180deg, rgba(255, 201, 77, 0.14), rgba(255, 255, 255, 0.96));
+      }
+
+      .notice-card strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .notice-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .empty-state {
+        padding: 22px;
+        border-radius: 24px;
+        border: 1px dashed rgba(22, 48, 36, 0.14);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%) translateY(12px);
+        padding: 12px 16px;
+        border-radius: 999px;
+        background: rgba(17, 48, 36, 0.96);
+        color: #fff;
+        font-weight: 800;
+        box-shadow: var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        z-index: 40;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(45, 201, 93, 0.14);
+        }
+        70% {
+          transform: scale(1.08);
+          box-shadow: 0 0 0 12px rgba(45, 201, 93, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(45, 201, 93, 0);
+        }
+      }
+
+      @keyframes pop {
+        from {
+          transform: translateY(4px) scale(0.98);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-stats {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: calc(100vw - 14px);
+          padding-top: 10px;
+        }
+
+        .hero-copy,
+        .hero-card,
+        .map-panel,
+        .player-panel {
+          padding: 16px;
+        }
+
+        .hero-copy h1 {
+          font-size: 30px;
+        }
+
+        .hero-stats {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .lesson-node {
+          grid-template-columns: 48px minmax(0, 1fr);
+        }
+
+        .mastery {
+          grid-column: 2;
+        }
+
+        .unit-track::before {
+          left: 39px;
+        }
+
+        .player-panel {
+          min-height: auto;
+        }
+
+        .fill-input {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .target-script {
+          font-size: 24px;
+        }
+      }
     </style>
   </head>
   <body>
-    <main class="app">
-      <section class="topbar">
-        <div>
-          <strong>🇦🇲 Armenio Trip Coach</strong>
-          <p class="muted">10 días · Abril · modo turista</p>
-        </div>
-        <span id="progressBadge" class="badge b-green">0%</span>
-      </section>
+    <div class="shell">
+      <header class="hero panel">
+        <section class="hero-copy">
+          <span class="eyebrow">Lecciones tipo Duolingo para Armenia</span>
+          <h1>Armenio Path</h1>
+          <p>
+            Un curso vivo, con mapa de niveles, desbloqueo real, corazones, racha y ejercicios de
+            elegir, completar, ordenar y voz. Pensado para practicar desde el navegador del iPhone.
+          </p>
 
-      <section id="screen-learn" class="card">
-        <h2>Ruta diaria</h2>
-        <p class="muted">Estilo Duolingo: lección corta + reto + mini quiz.</p>
-        <div class="actions">
-          <button class="btn btn-ghost" id="btnCopyLink">Copiar enlace de esta app</button>
-        </div>
-        <p id="linkHint" class="muted" style="margin-top:8px;"></p>
-        <div id="path" class="path"></div>
-      </section>
-
-      <section id="screen-practice" class="card" hidden>
-        <h2>Práctica rápida</h2>
-        <p class="muted">Tarjetas útiles para viajar hoy.</p>
-        <div class="flash">
-          <div id="flashArm" class="arm">բարև ձեզ</div>
-          <div id="flashTr" class="tr">Barev dzez · Hola</div>
-          <div class="actions" style="justify-content:center;">
-            <button class="btn btn-soft" id="btnPrev">◀ Anterior</button>
-            <button class="btn btn-main" id="btnFlip">Voltear</button>
-            <button class="btn btn-soft" id="btnNext">Siguiente ▶</button>
+          <div class="hero-progress">
+            <div class="progress-track" aria-label="Progreso del curso">
+              <span id="courseProgressFill" class="progress-fill"></span>
+            </div>
+            <div class="hero-stats">
+              <article class="stat">
+                <span>Nivel</span>
+                <strong id="statLevel">1</strong>
+              </article>
+              <article class="stat">
+                <span>XP</span>
+                <strong id="statXp">0</strong>
+              </article>
+              <article class="stat">
+                <span>Corazones</span>
+                <strong id="statHearts">5</strong>
+              </article>
+              <article class="stat">
+                <span>Racha</span>
+                <strong id="statStreak">0</strong>
+              </article>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="screen-quiz" class="card" hidden>
-        <h2>Mini quiz</h2>
-        <p id="quizQ" class="muted">Pregunta</p>
-        <div id="quizOptions"></div>
-        <div class="actions">
-          <button id="btnNextQ" class="btn btn-main" hidden>Siguiente</button>
-          <button id="btnResetQ" class="btn btn-ghost" hidden>Reiniciar quiz</button>
-        </div>
-      </section>
-    </main>
+        <aside class="hero-card">
+          <div>
+            <span class="pill soft">Ruta activa</span>
+            <h2 id="heroLessonTitle">Selecciona una lección</h2>
+            <p id="heroLessonText">El mapa de la izquierda marca qué lecciones están abiertas y cuáles quedan por desbloquear.</p>
+          </div>
+          <div class="pill-row">
+            <span class="pill sky" id="heroUnitPill">Unidad 1</span>
+            <span class="pill sun" id="heroMasteryPill">0/3</span>
+            <span class="pill" id="heroExercisesPill">4 ejercicios</span>
+          </div>
+          <div class="hero-actions">
+            <button id="heroStartBtn" class="btn primary">Empezar lección</button>
+            <button id="heroResetBtn" class="btn ghost">Reiniciar progreso</button>
+          </div>
+        </aside>
+      </header>
 
-    <nav class="nav">
-      <button class="active" data-screen="learn">📚 Aprender</button>
-      <button data-screen="practice">🃏 Practicar</button>
-      <button data-screen="quiz">✅ Quiz</button>
-    </nav>
+      <main class="layout">
+        <section class="panel map-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Mapa del curso</h2>
+              <p>Completa una lección para abrir la siguiente. Las coronas suben si repites con menos errores.</p>
+            </div>
+            <span id="courseSummaryPill" class="pill soft">0/9 completadas</span>
+          </div>
+          <div id="courseMap" class="course-map"></div>
+        </section>
+
+        <section class="panel player-panel">
+          <div class="panel-head">
+            <div>
+              <h2 id="playerTitle">Lección</h2>
+              <p id="playerSubtitle">Toca una lección abierta para verla aquí.</p>
+            </div>
+            <span id="playerStatus" class="pill">Lista</span>
+          </div>
+
+          <div class="lesson-track-wrap">
+            <div class="lesson-track-label">
+              <span id="lessonProgressLabel">0/4 ejercicios</span>
+              <span id="lessonProgressPct">0%</span>
+            </div>
+            <div class="lesson-track" aria-label="Progreso de la lección">
+              <span id="lessonProgressFill"></span>
+            </div>
+          </div>
+
+          <div id="playerBody" style="margin-top: 16px;"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
-      const lessons = [
-        { title: "Saludos + cortesía", goal: "Presentarte y sonar amable", phrases: ["Barev dzez", "Shnorhakalutyun", "Khndrem", "Ts'tesutyun"], challenge: "Di hola + gracias + adiós sin mirar." },
-        { title: "Pronunciación", goal: "kh/ts/sh sin trabarte", phrases: ["Shnorhakalutyun", "Chem haskanum", "Neroghutyun"], challenge: "Repite 10 veces: shnor-ha-ka-lu-tyun." },
-        { title: "Números y precios", goal: "Comprar sin estrés", phrases: ["Mek, yerku, yerek", "Inchqan e?", "Shat e"], challenge: "Pregunta precio de agua y pan." },
-        { title: "Restaurante", goal: "Pedir comida", phrases: ["Khndrem, joor", "Yes uzum em...", "Hashiv, khndrem"], challenge: "Pide 2 cosas + cuenta." },
-        { title: "Transporte", goal: "Moverte por Ereván", phrases: ["Ays hascen...", "Depi...", "Kangnek, khndrem"], challenge: "Di una dirección y pregunta tarifa." },
-        { title: "Hotel", goal: "Resolver check-in", phrases: ["Amragrum unem", "Senyak", "Banali"], challenge: "Tengo reserva + llave, por favor." },
-        { title: "Direcciones", goal: "No perderte", phrases: ["Vortegh e...?", "Aj / Dzakh", "Ughigh"], challenge: "Pregunta por Plaza de la República." },
-        { title: "Emergencias", goal: "Hablar con seguridad", phrases: ["Indz ognutyun e պետք", "Bzhishk", "Ognutyun!"], challenge: "Memoriza 3 frases de emergencia." },
-        { title: "Mini conversación", goal: "Hablar 30 segundos", phrases: ["Yes ... em", "Spainits em", "Turist em"], challenge: "Saluda + preséntate + agradece." },
-        { title: "Simulación final", goal: "Día completo real", phrases: ["Bats e?", "Aysor", "Vaghe"], challenge: "Desayuno + taxi + compra + cena." }
-      ];
+      const STORAGE_KEY = 'armenio-path-state-v1';
+      const EXERCISE_XP = 10;
+      const LESSON_BONUS = 20;
 
-      const flashcards = [
-        ["բարև ձեզ", "Barev dzez · Hola"],
-        ["շնորհակալություն", "Shnorhakalutyun · Gracias"],
-        ["խնդրում եմ", "Khndrem · Por favor / de nada"],
-        ["չեմ հասկանում", "Chem haskanum · No entiendo"],
-        ["ինչքա՞ն է", "Inchqan e? · ¿Cuánto cuesta?"],
-        ["որտե՞ղ է", "Vortegh e? · ¿Dónde está?"],
-        ["օգնություն", "Ognutyun · ¡Ayuda!"],
-      ];
-
-      const quiz = [
+      const course = [
         {
-          q: "¿Cómo dices 'gracias' en armenio?",
-          options: ["Shnorhakalutyun", "Ts'tesutyun", "Ayo"],
-          ok: 0,
-        },
-        {
-          q: "'Inchqan e?' significa...",
-          options: ["¿Dónde está?", "¿Cuánto cuesta?", "No entiendo"],
-          ok: 1,
-        },
-        {
-          q: "¿Cuál frase usarías para pedir la cuenta?",
-          options: ["Hashiv, khndrem", "Ays hascen", "Voch"],
-          ok: 0,
-        },
-      ];
-
-      const state = {
-        completed: JSON.parse(localStorage.getItem("armDays") || "[]"),
-        flashIndex: 0,
-        flashFlipped: false,
-        quizIndex: 0,
-        quizScore: 0,
-      };
-
-      const pathEl = document.getElementById("path");
-      const badge = document.getElementById("progressBadge");
-      const linkHint = document.getElementById("linkHint");
-
-      function saveProgress() {
-        localStorage.setItem("armDays", JSON.stringify(state.completed));
-      }
-
-      function pct() {
-        return Math.round((state.completed.length / lessons.length) * 100);
-      }
-
-      function renderPath() {
-        pathEl.innerHTML = "";
-        lessons.forEach((lesson, idx) => {
-          const dayNum = idx + 1;
-          const isDone = state.completed.includes(dayNum);
-          const unlocked = idx === 0 || state.completed.includes(dayNum - 1);
-          const row = document.createElement("article");
-          row.className = "day";
-          row.innerHTML = `
-            <button class="day-btn ${isDone ? "done" : unlocked ? "open" : "locked"}" ${unlocked ? "" : "disabled"}>${dayNum}</button>
-            <div class="lesson-card">
-              <h3>Día ${dayNum}: ${lesson.title}</h3>
-              <p class="muted">🎯 ${lesson.goal}</p>
-              <div class="chips">${lesson.phrases.map((p) => `<span class="chip">${p}</span>`).join("")}</div>
-              <p class="muted" style="margin-top:8px;">Reto: ${lesson.challenge}</p>
-              <div class="actions">
-                <button class="btn btn-main" data-complete="${dayNum}">${isDone ? "Completado ✅" : "Marcar como hecho"}</button>
-              </div>
-            </div>`;
-          pathEl.appendChild(row);
-        });
-        badge.textContent = `${pct()}%`;
-      }
-
-      pathEl.addEventListener("click", (e) => {
-        const day = e.target.getAttribute("data-complete");
-        if (!day) return;
-        const n = Number(day);
-        if (state.completed.includes(n)) return;
-        state.completed.push(n);
-        state.completed.sort((a,b) => a-b);
-        saveProgress();
-        renderPath();
-      });
-
-      document.getElementById("btnCopyLink").onclick = async () => {
-        const url = window.location.href;
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(url);
-          linkHint.textContent = `Enlace copiado: ${url}`;
-          return;
-        }
-        linkHint.textContent = `Copia este enlace manualmente: ${url}`;
-      };
-
-      const screens = {
-        learn: document.getElementById("screen-learn"),
-        practice: document.getElementById("screen-practice"),
-        quiz: document.getElementById("screen-quiz"),
-      };
-
-      document.querySelectorAll(".nav button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".nav button").forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          Object.values(screens).forEach((s) => (s.hidden = true));
-          screens[btn.dataset.screen].hidden = false;
-        });
-      });
-
-      const flashArm = document.getElementById("flashArm");
-      const flashTr = document.getElementById("flashTr");
-      function renderFlash() {
-        const [arm, tr] = flashcards[state.flashIndex];
-        flashArm.textContent = arm;
-        flashTr.textContent = state.flashFlipped ? tr : "Toca 'Voltear' para ver significado";
-      }
-      document.getElementById("btnFlip").onclick = () => { state.flashFlipped = !state.flashFlipped; renderFlash(); };
-      document.getElementById("btnPrev").onclick = () => {
-        state.flashIndex = (state.flashIndex - 1 + flashcards.length) % flashcards.length;
-        state.flashFlipped = false;
-        renderFlash();
-      };
-      document.getElementById("btnNext").onclick = () => {
-        state.flashIndex = (state.flashIndex + 1) % flashcards.length;
-        state.flashFlipped = false;
-        renderFlash();
-      };
-
-      const qEl = document.getElementById("quizQ");
-      const optEl = document.getElementById("quizOptions");
-      const nextQ = document.getElementById("btnNextQ");
-      const resetQ = document.getElementById("btnResetQ");
-
-      function renderQuiz() {
-        nextQ.hidden = true;
-        if (state.quizIndex >= quiz.length) {
-          qEl.textContent = `¡Completado! Puntuación: ${state.quizScore}/${quiz.length}`;
-          optEl.innerHTML = "";
-          resetQ.hidden = false;
-          return;
-        }
-        resetQ.hidden = true;
-        const item = quiz[state.quizIndex];
-        qEl.textContent = `Pregunta ${state.quizIndex + 1}: ${item.q}`;
-        optEl.innerHTML = "";
-        item.options.forEach((op, idx) => {
-          const b = document.createElement("button");
-          b.className = "quiz-option";
-          b.textContent = op;
-          b.onclick = () => {
-            [...optEl.children].forEach((c) => (c.disabled = true));
-            if (idx === item.ok) {
-              b.classList.add("ok");
-              state.quizScore += 1;
-            } else {
-              b.classList.add("bad");
-              optEl.children[item.ok].classList.add("ok");
+          id: 'unit-1',
+          title: 'Fundamentos',
+          focus: 'Saludos, cortesía y presentación',
+          lessons: [
+            {
+              id: 'l1',
+              title: 'Saludos rápidos',
+              subtitle: 'Hola y gracias',
+              checkpoint: false,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: 'Escucha el saludo y elige su traducción.',
+                  speaker: 'Barev dzez',
+                  script: 'բարև ձեզ',
+                  roman: 'Barev dzez',
+                  spanish: 'Hola formal',
+                  options: ['Hola', 'Gracias', 'Adiós'],
+                  correctIndex: 0,
+                  hint: 'Es el saludo formal más común.',
+                  explanation: 'Barev dzez se usa para saludar con respeto.'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la frase para agradecer.',
+                  parts: [
+                    { text: 'En armenio, "gracias" se escribe ' },
+                    { blank: { answer: 'Shnorhakalutyun', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Empieza por "Shn".',
+                  explanation: 'Shnorhakalutyun significa gracias.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la presentación.',
+                  bank: ['Yes', 'turist', 'em', 'khndrem'],
+                  answer: ['Yes', 'turist', 'em'],
+                  hint: 'La frase quiere decir "soy turista".',
+                  explanation: 'Yes turist em = Soy turista.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Di en voz alta el saludo formal.',
+                  speaker: 'Barev dzez',
+                  script: 'բարև ձեզ',
+                  roman: 'Barev dzez',
+                  spanish: 'Hola',
+                  answer: 'Barev dzez',
+                  hint: 'Pulsa el micrófono y repite la frase.',
+                  explanation: 'Si el navegador reconoce tu voz, avanzas como en Duolingo.'
+                }
+              ]
+            },
+            {
+              id: 'l2',
+              title: 'Cortesía útil',
+              subtitle: 'Preguntar, responder y no perderte',
+              checkpoint: false,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Khndrem"?',
+                  speaker: 'Khndrem',
+                  script: 'խնդրում եմ',
+                  roman: 'Khndrem',
+                  spanish: 'Por favor',
+                  options: ['Por favor / de nada', 'Adiós', '¿Cuánto cuesta?'],
+                  correctIndex: 0,
+                  hint: 'Sirve para pedir algo y también como respuesta amable.',
+                  explanation: 'Khndrem se usa como "por favor" y también como "de nada".'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la frase de comprensión.',
+                  parts: [
+                    { text: 'Cuando no entiendo, digo ' },
+                    { blank: { answer: 'Chem haskanum', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Empieza con "Chem".',
+                  explanation: 'Chem haskanum = No entiendo.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la frase.',
+                  bank: ['Yes', 'haskanum', 'em', 'voch'],
+                  answer: ['Yes', 'haskanum', 'em'],
+                  hint: 'La frase significa "entiendo".',
+                  explanation: 'Yes haskanum em = Entiendo.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Repite la palabra para dar las gracias.',
+                  speaker: 'Shnorhakalutyun',
+                  script: 'շնորհակալություն',
+                  roman: 'Shnorhakalutyun',
+                  spanish: 'Gracias',
+                  answer: 'Shnorhakalutyun',
+                  hint: 'Es larga, pero la clave es el comienzo "Shn".',
+                  explanation: 'Es la palabra más importante de esta lección.'
+                }
+              ]
+            },
+            {
+              id: 'l3',
+              title: 'Presentarte',
+              subtitle: 'Hablar de ti mismo',
+              checkpoint: true,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Yes turist em"?',
+                  speaker: 'Yes turist em',
+                  script: 'ես տուրիստ եմ',
+                  roman: 'Yes turist em',
+                  spanish: 'Soy turista',
+                  options: ['Soy turista', 'Tengo hambre', 'Necesito ayuda'],
+                  correctIndex: 0,
+                  hint: 'Ya te lo has visto en viaje.',
+                  explanation: 'Yes turist em = Soy turista.'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la frase.',
+                  parts: [
+                    { text: 'Yes ' },
+                    { blank: { answer: 'turist', placeholder: '...' } },
+                    { text: ' em.' }
+                  ],
+                  hint: 'Es la palabra para turista.',
+                  explanation: 'Con esa estructura ya puedes presentarte.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la frase para decir de dónde eres.',
+                  bank: ['Yes', 'Spainits', 'em', 'Armeniayic'],
+                  answer: ['Yes', 'Spainits', 'em'],
+                  hint: 'La frase usa "Yes ... em".',
+                  explanation: 'Yes Spainits em = Soy de España.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Dilo en voz alta.',
+                  speaker: 'Yes turist em',
+                  script: 'ես տուրիստ եմ',
+                  roman: 'Yes turist em',
+                  spanish: 'Soy turista',
+                  answer: 'Yes turist em',
+                  hint: 'Respira y dilo en tres partes.',
+                  explanation: 'Perfecto para romper el hielo con cualquier conversación.'
+                }
+              ]
             }
-            nextQ.hidden = false;
-          };
-          optEl.appendChild(b);
-        });
-      }
+          ]
+        },
+        {
+          id: 'unit-2',
+          title: 'Viaje real',
+          focus: 'Precios, comida y moverte por la ciudad',
+          lessons: [
+            {
+              id: 'l4',
+              title: 'Números y precios',
+              subtitle: 'Comprar sin estrés',
+              checkpoint: false,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Inchqan e?"',
+                  speaker: 'Inchqan e?',
+                  script: 'ինչքա՞ն է',
+                  roman: 'Inchqan e?',
+                  spanish: '¿Cuánto cuesta?',
+                  options: ['¿Cuánto cuesta?', '¿Dónde está?', '¿Cómo te llamas?'],
+                  correctIndex: 0,
+                  hint: 'Úsalo al preguntar precios.',
+                  explanation: 'Inchqan e? = ¿Cuánto cuesta?'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la serie.',
+                  parts: [
+                    { text: 'Mek, yerku, ' },
+                    { blank: { answer: 'yerek', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Es el número que viene después de dos.',
+                  explanation: 'Mek, yerku, yerek = uno, dos, tres.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena los números.',
+                  bank: ['Mek', 'yerku', 'yerek', 'chesh'],
+                  answer: ['Mek', 'yerku', 'yerek'],
+                  hint: 'Es una secuencia básica.',
+                  explanation: 'La secuencia correcta es uno, dos, tres.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Pregunta el precio en voz alta.',
+                  speaker: 'Inchqan e?',
+                  script: 'ինչքա՞ն է',
+                  roman: 'Inchqan e?',
+                  spanish: '¿Cuánto cuesta?',
+                  answer: 'Inchqan e?',
+                  hint: 'Suena como una pregunta corta y clara.',
+                  explanation: 'Preguntar precios es una de las frases más útiles del viaje.'
+                }
+              ]
+            },
+            {
+              id: 'l5',
+              title: 'Restaurante',
+              subtitle: 'Pedir comida y pagar',
+              checkpoint: false,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué pide "Yes uzum em joor"?',
+                  speaker: 'Yes uzum em joor',
+                  script: 'ես ուզում եմ ջուր',
+                  roman: 'Yes uzum em joor',
+                  spanish: 'Quiero agua',
+                  options: ['Quiero agua', 'Quiero pan', 'Quiero sentarme'],
+                  correctIndex: 0,
+                  hint: 'La palabra central es "joor".',
+                  explanation: 'Yes uzum em joor = Quiero agua.'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la frase para pedir la cuenta.',
+                  parts: [
+                    { text: 'Para pedir la cuenta digo ' },
+                    { blank: { answer: 'Hashiv, khndrem', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Empieza por "Hashiv".',
+                  explanation: 'Hashiv, khndrem = La cuenta, por favor.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la frase para pedir agua.',
+                  bank: ['Yes', 'uzum', 'em', 'joor', 'khndrem'],
+                  answer: ['Yes', 'uzum', 'em', 'joor'],
+                  hint: 'Piénsalo como "quiero agua".',
+                  explanation: 'Yes uzum em joor = Quiero agua.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Pide agua con voz clara.',
+                  speaker: 'Yes uzum em joor',
+                  script: 'ես ուզում եմ ջուր',
+                  roman: 'Yes uzum em joor',
+                  spanish: 'Quiero agua',
+                  answer: 'Yes uzum em joor',
+                  hint: 'Di la frase como si estuvieras en una cafetería.',
+                  explanation: 'La voz te ayuda a fijar la frase en memoria.'
+                }
+              ]
+            },
+            {
+              id: 'l6',
+              title: 'Transporte',
+              subtitle: 'Taxi, paradas y destinos',
+              checkpoint: true,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Kangnek, khndrem"?',
+                  speaker: 'Kangnek, khndrem',
+                  script: 'կանգնեք, խնդրում եմ',
+                  roman: 'Kangnek, khndrem',
+                  spanish: 'Pare, por favor',
+                  options: ['Pare, por favor', 'Siga recto', 'Gire a la derecha'],
+                  correctIndex: 0,
+                  hint: 'Lo usarás mucho en taxi.',
+                  explanation: 'Kangnek, khndrem = Pare, por favor.'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la dirección.',
+                  parts: [
+                    { text: 'Depi ' },
+                    { blank: { answer: 'kentron', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Significa "hacia el centro".',
+                  explanation: 'Depi kentron = Hacia el centro.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la frase.',
+                  bank: ['Ays', 'hascen', 'shnorhakalutyun', 'kentron'],
+                  answer: ['Ays', 'hascen'],
+                  hint: 'Es una dirección corta.',
+                  explanation: 'Ays hascen = Esta dirección.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Pide que el taxi pare.',
+                  speaker: 'Kangnek, khndrem',
+                  script: 'կանգնեք, խնդրում եմ',
+                  roman: 'Kangnek, khndrem',
+                  spanish: 'Pare, por favor',
+                  answer: 'Kangnek, khndrem',
+                  hint: 'La frase funciona muy bien en conversaciones rápidas.',
+                  explanation: 'Cuanto más lo repitas, más natural te saldrá.'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'unit-3',
+          title: 'Supervivencia',
+          focus: 'Direcciones, hotel y emergencias',
+          lessons: [
+            {
+              id: 'l7',
+              title: 'Direcciones',
+              subtitle: 'No perderte por la ciudad',
+              checkpoint: false,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Vortegh e?"',
+                  speaker: 'Vortegh e?',
+                  script: 'որտե՞ղ է',
+                  roman: 'Vortegh e?',
+                  spanish: '¿Dónde está?',
+                  options: ['¿Dónde está?', '¿Cuánto cuesta?', '¿Tienes tiempo?'],
+                  correctIndex: 0,
+                  hint: 'Es la pregunta universal de los viajeros.',
+                  explanation: 'Vortegh e? = ¿Dónde está?'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la indicación.',
+                  parts: [
+                    { text: 'Derecha en armenio: ' },
+                    { blank: { answer: 'Aj', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Son dos letras.',
+                  explanation: 'Aj = derecha.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la indicación.',
+                  bank: ['Ughigh', 'gna', 'shnorhakalutyun'],
+                  answer: ['Ughigh', 'gna'],
+                  hint: 'Es como decir "ve recto".',
+                  explanation: 'Ughigh gna = Sigue recto.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Pregunta por una calle o un lugar.',
+                  speaker: 'Vortegh e?',
+                  script: 'որտե՞ղ է',
+                  roman: 'Vortegh e?',
+                  spanish: '¿Dónde está?',
+                  answer: 'Vortegh e?',
+                  hint: 'Haz la pregunta con energía de turista perdido.',
+                  explanation: 'Una frase clave para moverte sin estrés.'
+                }
+              ]
+            },
+            {
+              id: 'l8',
+              title: 'Hotel y reserva',
+              subtitle: 'Check-in y llaves',
+              checkpoint: false,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Amragrum unem"?',
+                  speaker: 'Amragrum unem',
+                  script: 'ամրագրում ունեմ',
+                  roman: 'Amragrum unem',
+                  spanish: 'Tengo una reserva',
+                  options: ['Tengo una reserva', 'Necesito ayuda', 'Quiero la cuenta'],
+                  correctIndex: 0,
+                  hint: 'Lo dirás al llegar al hotel.',
+                  explanation: 'Amragrum unem = Tengo una reserva.'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la frase de la llave.',
+                  parts: [
+                    { text: 'La llave es ' },
+                    { blank: { answer: 'Banali', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Pista: empieza con "Ba".',
+                  explanation: 'Banali = llave.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena la petición.',
+                  bank: ['Banali', 'khndrem', 'joor'],
+                  answer: ['Banali', 'khndrem'],
+                  hint: 'Puedes usarlo al pedir la llave.',
+                  explanation: 'Banali, khndrem = Llave, por favor.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Di que tienes una reserva.',
+                  speaker: 'Amragrum unem',
+                  script: 'ամրագրում ունեմ',
+                  roman: 'Amragrum unem',
+                  spanish: 'Tengo una reserva',
+                  answer: 'Amragrum unem',
+                  hint: 'Es una frase corta y útil.',
+                  explanation: 'Genial para hacer check-in rápidamente.'
+                }
+              ]
+            },
+            {
+              id: 'l9',
+              title: 'Misión final',
+              subtitle: 'Emergencias y repaso general',
+              checkpoint: true,
+              exercises: [
+                {
+                  kind: 'mcq',
+                  prompt: '¿Qué significa "Indz ognutyun e petq"?',
+                  speaker: 'Indz ognutyun e petq',
+                  script: 'ինձ օգնություն է պետք',
+                  roman: 'Indz ognutyun e petq',
+                  spanish: 'Necesito ayuda',
+                  options: ['Necesito ayuda', 'Quiero agua', 'Soy turista'],
+                  correctIndex: 0,
+                  hint: 'Te salva en cualquier situación difícil.',
+                  explanation: 'Indz ognutyun e petq = Necesito ayuda.'
+                },
+                {
+                  kind: 'fill',
+                  prompt: 'Completa la presentación final.',
+                  parts: [
+                    { text: 'Soy turista: ' },
+                    { blank: { answer: 'Yes turist em', placeholder: '...' } },
+                    { text: '.' }
+                  ],
+                  hint: 'Ya la has visto antes.',
+                  explanation: 'Es una frase básica de supervivencia.'
+                },
+                {
+                  kind: 'compose',
+                  prompt: 'Ordena el saludo final.',
+                  bank: ['Barev', 'dzez', 'khndrem'],
+                  answer: ['Barev', 'dzez'],
+                  hint: 'El saludo formal se compone de dos palabras.',
+                  explanation: 'Barev dzez = Hola formal.'
+                },
+                {
+                  kind: 'voice',
+                  prompt: 'Despídete en voz alta.',
+                  speaker: "Ts'tesutyun",
+                  script: 'ցտեսություն',
+                  roman: "Ts'tesutyun",
+                  spanish: 'Adiós',
+                  answer: "Ts'tesutyun",
+                  hint: 'Suena a despedida tranquila.',
+                  explanation: "Ts'tesutyun = Adiós."
+                }
+              ]
+            }
+          ]
+        }
+      ];
 
-      nextQ.onclick = () => { state.quizIndex += 1; renderQuiz(); };
-      resetQ.onclick = () => {
-        state.quizIndex = 0;
-        state.quizScore = 0;
-        renderQuiz();
+      const lessons = course.flatMap((unit) => unit.lessons);
+
+      const defaultState = {
+        xp: 0,
+        hearts: 5,
+        streak: 0,
+        lastActiveDay: null,
+        selectedLessonId: lessons[0].id,
+        session: null,
+        completed: {}
       };
 
-      renderPath();
-      renderFlash();
-      renderQuiz();
+      function cloneDefaultState() {
+        if (typeof structuredClone === 'function') {
+          return structuredClone(defaultState);
+        }
+        return JSON.parse(JSON.stringify(defaultState));
+      }
+
+      const refs = {
+        courseMap: document.getElementById('courseMap'),
+        courseProgressFill: document.getElementById('courseProgressFill'),
+        courseSummaryPill: document.getElementById('courseSummaryPill'),
+        heroLessonTitle: document.getElementById('heroLessonTitle'),
+        heroLessonText: document.getElementById('heroLessonText'),
+        heroUnitPill: document.getElementById('heroUnitPill'),
+        heroMasteryPill: document.getElementById('heroMasteryPill'),
+        heroExercisesPill: document.getElementById('heroExercisesPill'),
+        heroStartBtn: document.getElementById('heroStartBtn'),
+        heroResetBtn: document.getElementById('heroResetBtn'),
+        playerTitle: document.getElementById('playerTitle'),
+        playerSubtitle: document.getElementById('playerSubtitle'),
+        playerStatus: document.getElementById('playerStatus'),
+        lessonProgressLabel: document.getElementById('lessonProgressLabel'),
+        lessonProgressPct: document.getElementById('lessonProgressPct'),
+        lessonProgressFill: document.getElementById('lessonProgressFill'),
+        playerBody: document.getElementById('playerBody'),
+        statLevel: document.getElementById('statLevel'),
+        statXp: document.getElementById('statXp'),
+        statHearts: document.getElementById('statHearts'),
+        statStreak: document.getElementById('statStreak'),
+        toast: document.getElementById('toast')
+      };
+
+      const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+      let state = loadState();
+
+      hydrateDailyState();
+      normalizeSelectedLesson();
+      saveState();
+
+      render();
+
+      refs.heroStartBtn.addEventListener('click', () => {
+        const lesson = getSelectedLesson();
+        if (!lesson) return;
+        startLesson(lesson.id);
+      });
+
+      refs.heroResetBtn.addEventListener('click', () => {
+        const confirmReset = window.confirm('¿Quieres borrar el progreso y empezar desde cero?');
+        if (!confirmReset) return;
+        state = cloneDefaultState();
+        hydrateDailyState();
+        saveState();
+        render();
+        toast('Progreso reiniciado');
+      });
+
+      refs.courseMap.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-lesson-id]');
+        if (!button) return;
+        const lessonId = button.getAttribute('data-lesson-id');
+        const lesson = getLessonById(lessonId);
+        if (!lesson) return;
+        if (!isLessonUnlocked(lesson.id)) {
+          toast('Primero completa la lección anterior');
+          return;
+        }
+        state.selectedLessonId = lesson.id;
+        saveState();
+        render();
+      });
+
+      function loadState() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+          if (!parsed || typeof parsed !== 'object') return cloneDefaultState();
+          return {
+            ...cloneDefaultState(),
+            ...parsed,
+            completed: parsed.completed && typeof parsed.completed === 'object' ? parsed.completed : {}
+          };
+        } catch {
+          return cloneDefaultState();
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function hydrateDailyState() {
+        const today = todayKey();
+        if (!state.lastActiveDay) {
+          state.lastActiveDay = today;
+          state.streak = Math.max(1, state.streak || 1);
+          return;
+        }
+
+        if (state.lastActiveDay === today) return;
+
+        const previous = new Date(`${state.lastActiveDay}T00:00:00`);
+        const current = new Date(`${today}T00:00:00`);
+        const diffDays = Math.round((current - previous) / 86400000);
+
+        if (diffDays === 1) {
+          state.streak = Math.max(1, (state.streak || 0) + 1);
+        } else {
+          state.streak = 1;
+        }
+
+        state.hearts = 5;
+        state.lastActiveDay = today;
+      }
+
+      function normalizeSelectedLesson() {
+        if (state.session && !state.session.finished && getLessonById(state.session.lessonId)) {
+          state.selectedLessonId = state.session.lessonId;
+        }
+
+        if (!getLessonById(state.selectedLessonId)) {
+          state.selectedLessonId = getFirstUnlockedLesson().id;
+        }
+
+        if (!isLessonUnlocked(state.selectedLessonId)) {
+          state.selectedLessonId = getFirstUnlockedLesson().id;
+        }
+      }
+
+      function todayKey() {
+        return new Date().toISOString().slice(0, 10);
+      }
+
+      function getLessonById(id) {
+        return lessons.find((lesson) => lesson.id === id) || null;
+      }
+
+      function getLessonIndex(id) {
+        return lessons.findIndex((lesson) => lesson.id === id);
+      }
+
+      function getLessonUnit(lesson) {
+        return course.find((unit) => unit.lessons.some((item) => item.id === lesson.id)) || null;
+      }
+
+      function isLessonUnlocked(id) {
+        const index = getLessonIndex(id);
+        if (index <= 0) return index === 0;
+        return Boolean(state.completed[lessons[index - 1].id]);
+      }
+
+      function getFirstUnlockedLesson() {
+        return lessons.find((lesson, index) => index === 0 || Boolean(state.completed[lessons[index - 1].id])) || lessons[0];
+      }
+
+      function getSelectedLesson() {
+        return getLessonById(state.selectedLessonId) || getFirstUnlockedLesson();
+      }
+
+      function getCurrentUnitForLesson(lesson) {
+        return course.find((unit) => unit.lessons.some((item) => item.id === lesson.id)) || course[0];
+      }
+
+      function completedCount() {
+        return Object.keys(state.completed).length;
+      }
+
+      function totalProgressPct() {
+        return Math.round((completedCount() / lessons.length) * 100);
+      }
+
+      function masteryLabel(level) {
+        const value = Math.max(0, Math.min(3, level || 0));
+        return `${'★'.repeat(value)}${'☆'.repeat(3 - value)}`;
+      }
+
+      function masteryClass(level) {
+        return `c${Math.max(0, Math.min(3, level || 0))}`;
+      }
+
+      function levelFromXp(xp) {
+        return Math.max(1, Math.floor((xp || 0) / 120) + 1);
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      function normalizeText(value) {
+        return String(value || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9áéíóúñա-և]+/giu, ' ')
+          .trim()
+          .replace(/\s+/g, ' ');
+      }
+
+      function levenshtein(a, b) {
+        const left = normalizeText(a);
+        const right = normalizeText(b);
+        const rows = Array.from({ length: left.length + 1 }, () => new Array(right.length + 1).fill(0));
+
+        for (let i = 0; i <= left.length; i += 1) rows[i][0] = i;
+        for (let j = 0; j <= right.length; j += 1) rows[0][j] = j;
+
+        for (let i = 1; i <= left.length; i += 1) {
+          for (let j = 1; j <= right.length; j += 1) {
+            rows[i][j] = Math.min(
+              rows[i - 1][j] + 1,
+              rows[i][j - 1] + 1,
+              rows[i - 1][j - 1] + (left[i - 1] === right[j - 1] ? 0 : 1)
+            );
+          }
+        }
+
+        return rows[left.length][right.length];
+      }
+
+      function similarity(a, b) {
+        const left = normalizeText(a);
+        const right = normalizeText(b);
+        const base = Math.max(left.length, right.length, 1);
+        return 1 - levenshtein(left, right) / base;
+      }
+
+      function shuffle(values) {
+        const list = [...values];
+        for (let i = list.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [list[i], list[j]] = [list[j], list[i]];
+        }
+        return list;
+      }
+
+      function vibrate(pattern) {
+        if (navigator.vibrate) navigator.vibrate(pattern);
+      }
+
+      function toast(message) {
+        refs.toast.textContent = message;
+        refs.toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => refs.toast.classList.remove('show'), 1800);
+      }
+
+      function speak(text) {
+        if (!('speechSynthesis' in window) || !text) return;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.92;
+        utterance.pitch = 1;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function render() {
+        normalizeSelectedLesson();
+        renderHero();
+        renderMap();
+        renderPlayer();
+        renderStats();
+        saveState();
+      }
+
+      function renderStats() {
+        refs.statLevel.textContent = String(levelFromXp(state.xp));
+        refs.statXp.textContent = String(state.xp);
+        refs.statHearts.textContent = String(state.hearts);
+        refs.statStreak.textContent = String(state.streak || 0);
+        refs.courseProgressFill.style.width = `${totalProgressPct()}%`;
+        refs.courseSummaryPill.textContent = `${completedCount()}/${lessons.length} completadas`;
+      }
+
+      function renderHero() {
+        const lesson = getSelectedLesson();
+        const unit = getCurrentUnitForLesson(lesson);
+        const mastery = state.completed[lesson.id]?.mastery || 0;
+        const total = lesson.exercises.length;
+        const nextLesson = lessons[getLessonIndex(lesson.id) + 1] || null;
+
+        refs.heroLessonTitle.textContent = lesson.title;
+        refs.heroLessonText.textContent = nextLesson
+          ? `Practica "${lesson.subtitle}". Al terminar, desbloquearás "${nextLesson.title}".`
+          : 'Esta es la última lección del curso. Si la completas, habrás abierto todo el camino.';
+        refs.heroUnitPill.textContent = unit.title;
+        refs.heroMasteryPill.textContent = `${masteryLabel(mastery)} · coronas`;
+        refs.heroExercisesPill.textContent = `${total} ejercicios`;
+        refs.heroStartBtn.textContent = state.session && state.session.lessonId === lesson.id && !state.session.finished ? 'Continuar' : 'Empezar lección';
+      }
+
+      function renderMap() {
+        refs.courseMap.innerHTML = course
+          .map((unit) => {
+            const completedLessons = unit.lessons.filter((lesson) => Boolean(state.completed[lesson.id])).length;
+            const masteredLessons = unit.lessons.filter((lesson) => (state.completed[lesson.id]?.mastery || 0) === 3).length;
+            const progress = Math.round((completedLessons / unit.lessons.length) * 100);
+
+            return `
+              <article class="unit-card">
+                <div class="unit-top">
+                  <div>
+                    <h3 class="unit-title">${escapeHtml(unit.title)}</h3>
+                    <p class="unit-copy">${escapeHtml(unit.focus)}</p>
+                  </div>
+                  <div class="unit-progress">
+                    <strong>${progress}%</strong>
+                    <span>${completedLessons}/${unit.lessons.length} lecciones · ${masteredLessons} al nivel 3</span>
+                  </div>
+                </div>
+                <div class="unit-track">
+                  ${unit.lessons
+                    .map((lesson, index) => {
+                      const globalIndex = getLessonIndex(lesson.id);
+                      const unlocked = isLessonUnlocked(lesson.id);
+                      const selected = state.selectedLessonId === lesson.id;
+                      const progressState = state.completed[lesson.id];
+                      const mastery = progressState?.mastery || 0;
+                      const statusClass = progressState ? (mastery === 3 ? 'mastered done' : 'done') : unlocked ? 'open' : 'locked';
+                      const badgeText = progressState ? '✓' : globalIndex + 1;
+                      const checkpoint = lesson.checkpoint ? '<span class="pill sun">Checkpoint</span>' : '';
+                      return `
+                        <button class="lesson-node ${statusClass} ${selected ? 'active' : ''}" data-lesson-id="${lesson.id}" ${unlocked ? '' : 'disabled'}>
+                          <span class="node-badge">${badgeText}</span>
+                          <span class="lesson-copy">
+                            <strong>${escapeHtml(lesson.title)}</strong>
+                            <small>${escapeHtml(lesson.subtitle)} ${checkpoint ? '· Checkpoint final' : ''}</small>
+                          </span>
+                          <span class="mastery ${masteryClass(mastery)}">${masteryLabel(mastery)}</span>
+                        </button>
+                      `;
+                    })
+                    .join('')}
+                </div>
+              </article>
+            `;
+          })
+          .join('');
+      }
+
+      function renderPlayer() {
+        const lesson = getSelectedLesson();
+        const session = state.session;
+        const isActiveSession = Boolean(session && session.lessonId === lesson.id && !session.finished);
+        const isFinishedSession = Boolean(session && session.lessonId === lesson.id && session.finished);
+        const failedSession = Boolean(session && session.lessonId === lesson.id && session.finished && session.result?.failed);
+        const status = !isLessonUnlocked(lesson.id) ? 'Bloqueada' : failedSession ? 'Sin corazones' : isFinishedSession ? 'Completada' : isActiveSession ? 'En curso' : 'Lista';
+
+        refs.playerTitle.textContent = lesson.title;
+        refs.playerSubtitle.textContent = lesson.subtitle;
+        refs.playerStatus.textContent = status;
+
+        if (isActiveSession) {
+          const total = lesson.exercises.length;
+          const current = session.exerciseIndex;
+          refs.lessonProgressLabel.textContent = `${Math.min(current + 1, total)}/${total} ejercicios`;
+          refs.lessonProgressPct.textContent = `${Math.round((current / total) * 100)}%`;
+          refs.lessonProgressFill.style.width = `${Math.round((current / total) * 100)}%`;
+          refs.playerBody.innerHTML = renderExerciseCard(lesson, session);
+          return;
+        }
+
+        if (isFinishedSession) {
+          refs.lessonProgressLabel.textContent = `${lesson.exercises.length}/${lesson.exercises.length} ejercicios`;
+          refs.lessonProgressPct.textContent = '100%';
+          refs.lessonProgressFill.style.width = '100%';
+          refs.playerBody.innerHTML = renderResultCard(lesson, session);
+          return;
+        }
+
+        refs.lessonProgressLabel.textContent = `0/${lesson.exercises.length} ejercicios`;
+        refs.lessonProgressPct.textContent = '0%';
+        refs.lessonProgressFill.style.width = '0%';
+        refs.playerBody.innerHTML = renderPreviewCard(lesson);
+      }
+
+      function renderPreviewCard(lesson) {
+        const unit = getLessonUnit(lesson);
+        const mastery = state.completed[lesson.id]?.mastery || 0;
+        const nextLesson = lessons[getLessonIndex(lesson.id) + 1] || null;
+        const otherSession = state.session && state.session.lessonId !== lesson.id && !state.session.finished;
+        const completed = Boolean(state.completed[lesson.id]);
+        const startLabel = completed ? 'Repetir para subir nivel' : otherSession ? 'Empezar aquí' : 'Empezar lección';
+        const activeLessonText = otherSession
+          ? `Tienes una lección en curso: ${getLessonById(state.session.lessonId).title}. Puedes volver cuando quieras o empezar esta desde cero.`
+          : `Esta lección tiene ${lesson.exercises.length} ejercicios y reparte XP, coronas y progreso de desbloqueo.`;
+
+        return `
+          <div class="lesson-preview">
+            <div class="pill-row">
+              <span class="pill soft">${escapeHtml(unit.title)}</span>
+              <span class="pill sky">${lesson.checkpoint ? 'Checkpoint' : 'Lección normal'}</span>
+              <span class="pill sun">${masteryLabel(mastery)} coronas</span>
+            </div>
+            <div>
+              <h3 class="lesson-title">${escapeHtml(lesson.title)}</h3>
+              <p class="lesson-subtitle">${escapeHtml(lesson.subtitle)}</p>
+            </div>
+            <p>${escapeHtml(activeLessonText)}</p>
+            <div class="badge-stack">
+              <span class="pill">4 ejercicios</span>
+              <span class="pill">+${lesson.exercises.length * EXERCISE_XP + LESSON_BONUS} XP aprox.</span>
+              <span class="pill">1 error = 1 corazón</span>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="startLessonNow">${escapeHtml(startLabel)}</button>
+              <button class="btn ghost" id="reviewMapBtn">${nextLesson ? `Ir al mapa` : 'Volver al mapa'}</button>
+            </div>
+            <div class="notice-card">
+              <strong>Cómo funciona</strong>
+              <p>Si fallas, pierdes un corazón. Si completas la lección, se abre la siguiente y guardamos la mejor corona conseguida.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderExerciseCard(lesson, session) {
+        const exercise = lesson.exercises[session.exerciseIndex];
+        const draft = ensureDraft(session, lesson, exercise, session.exerciseIndex);
+        const kindLabel = {
+          mcq: 'Elegir',
+          fill: 'Completar',
+          compose: 'Ordenar',
+          voice: 'Voz'
+        }[exercise.kind];
+
+        const selectedIndex = session.exerciseIndex + 1;
+        const total = lesson.exercises.length;
+        const feedback = draft.feedback || '';
+        const feedbackClass = draft.feedbackType || '';
+        const continueDisabled = !draft.solved;
+
+        return `
+          <article class="exercise-card">
+            <div class="exercise-head">
+              <div>
+                <div class="exercise-kind">${kindLabel} · ejercicio ${selectedIndex}/${total}</div>
+                <div class="exercise-prompt">${escapeHtml(exercise.prompt)}</div>
+                <div class="exercise-sub">${escapeHtml(exercise.hint || '')}</div>
+              </div>
+              <button class="btn soft" data-speak="${escapeHtml(exercise.speaker || '')}">🔊 Escuchar</button>
+            </div>
+            ${renderExerciseBody(exercise, draft, lesson, session)}
+            <div class="feedback ${feedbackClass}" data-feedback ${feedback ? '' : 'hidden'}>
+              <strong>${draft.feedbackTitle || ''}</strong>
+              <p>${escapeHtml(feedback)}</p>
+            </div>
+            <div class="actions">
+              <button class="btn primary" data-check ${draft.solved ? 'hidden' : ''}>Comprobar</button>
+              <button class="btn primary" data-continue ${continueDisabled ? 'hidden' : ''}>${selectedIndex === total ? 'Terminar lección' : 'Continuar'}</button>
+              <button class="btn ghost" data-hint>Mostrar pista</button>
+              <button class="btn danger" data-abandon>Cancelar lección</button>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderExerciseBody(exercise, draft) {
+        if (exercise.kind === 'mcq') {
+          return `
+            <div class="target-card">
+              <div class="target-script">${escapeHtml(exercise.script || exercise.speaker || '')}</div>
+              <div class="target-roman">${escapeHtml(exercise.roman || exercise.speaker || '')}</div>
+              <div class="target-spanish">${escapeHtml(exercise.spanish || '')}</div>
+            </div>
+            <div class="choice-grid">
+              ${exercise.options
+                .map((option, index) => {
+                  const classes = [
+                    'choice-btn',
+                    draft.selectedIndex === index ? 'selected' : '',
+                    draft.solved && index === exercise.correctIndex ? 'correct' : '',
+                    draft.checked && draft.selectedIndex === index && index !== exercise.correctIndex ? 'wrong' : ''
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
+                  return `<button class="${classes}" data-choice="${index}">${escapeHtml(option)}</button>`;
+                })
+                .join('')}
+            </div>
+          `;
+        }
+
+        if (exercise.kind === 'fill') {
+          return `
+            <div class="fill-line">
+              ${exercise.parts
+                .map((part, index) => {
+                  if (part.text) return `<span>${escapeHtml(part.text)}</span>`;
+                  return `
+                    <input
+                      class="fill-input"
+                      data-fill-index="${index}"
+                      value="${escapeHtml(draft.values[index] || '')}"
+                      placeholder="${escapeHtml(part.blank.placeholder || '...')}"
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                  `;
+                })
+                .join('')}
+            </div>
+          `;
+        }
+
+        if (exercise.kind === 'compose') {
+          const tray = draft.selectedWords
+            .map((word, index) => `<button class="word-chip selected" data-tray-index="${index}">${escapeHtml(word)}</button>`)
+            .join('');
+          const bank = draft.bank
+            .map((word, index) => `<button class="word-chip" data-bank-index="${index}">${escapeHtml(word)}</button>`)
+            .join('');
+
+          return `
+            <div class="notice-card">
+              <strong>Tu frase</strong>
+              <p>Haz clic en las palabras para componer la oración. Puedes tocar una palabra del tray para quitarla.</p>
+            </div>
+            <div class="answer-tray">${tray || '<span class="muted">Tu frase aparecerá aquí</span>'}</div>
+            <div class="word-bank">${bank}</div>
+          `;
+        }
+
+        if (exercise.kind === 'voice') {
+          const supported = draft.supported;
+          return `
+            <div class="voice-box">
+              <div class="voice-live">
+                <div class="mic-state"><span class="mic-dot"></span><span>${supported ? 'Reconocimiento de voz listo' : 'Plan B activado'}</span></div>
+                <div class="voice-target">
+                  <div class="target-script">${escapeHtml(exercise.script || '')}</div>
+                  <div class="target-roman">${escapeHtml(exercise.roman || exercise.answer)}</div>
+                  <div class="target-spanish">${escapeHtml(exercise.spanish || '')}</div>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn soft" data-voice-speak>🔊 Escuchar otra vez</button>
+                <button class="btn primary" data-voice-record>${supported ? '🎙️ Grabar voz' : '🎙️ No disponible'}</button>
+              </div>
+              <label class="field">
+                <span class="field-label">Plan B</span>
+                <input
+                  class="text-input"
+                  data-voice-input
+                  value="${escapeHtml(draft.transcript || '')}"
+                  placeholder="Escribe lo que dijiste o corrige el reconocimiento"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </label>
+            </div>
+          `;
+        }
+
+        return '';
+      }
+
+      function renderResultCard(lesson, session) {
+        const mastery = session.result?.mastery || state.completed[lesson.id]?.mastery || 0;
+        const bonusXp = session.result?.bonusXp || 0;
+        const lessonXp = session.result?.lessonXp || 0;
+        const nextLesson = lessons[getLessonIndex(lesson.id) + 1] || null;
+        const completedState = state.completed[lesson.id] || {};
+        const failed = Boolean(session.result?.failed);
+        const completedText = failed
+          ? 'Te quedaste sin corazones. Puedes reiniciar la lección y volver a intentarlo.'
+          : nextLesson
+            ? `Ya abriste "${nextLesson.title}".`
+            : 'Has completado todo el curso.';
+
+        return `
+          <div class="result-card">
+            <div class="result-head">
+              <div>
+                <span class="pill soft">${failed ? 'Lección pausada' : 'Lección completada'}</span>
+                <h3>${escapeHtml(lesson.title)}</h3>
+                <p>${escapeHtml(completedText)}</p>
+              </div>
+              <div class="pill sun">${failed ? '0/3' : masteryLabel(mastery)} coronas</div>
+            </div>
+            <div class="badge-stack">
+              <span class="pill">XP de ejercicios: ${lessonXp}</span>
+              <span class="pill">Bonus: ${bonusXp}</span>
+              <span class="pill">Errores: ${completedState.mistakes || session.mistakes || 0}</span>
+            </div>
+            <p>
+              El sistema guardó tu mejor corona para esta lección. Si la repites, puedes subir de nivel y mejorar tu dominio.
+            </p>
+            <div class="actions">
+              <button class="btn primary" id="resultNextBtn">${failed ? 'Reintentar lección' : nextLesson ? `Siguiente lección: ${escapeHtml(nextLesson.title)}` : 'Volver al mapa'}</button>
+              <button class="btn ghost" id="resultReplayBtn">${failed ? 'Volver al mapa' : 'Repetir esta lección'}</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function ensureDraft(session, lesson, exercise, index) {
+        const key = `${lesson.id}:${index}`;
+        if (session.answers[key]) {
+          return session.answers[key];
+        }
+
+        let draft;
+        if (exercise.kind === 'mcq') {
+          draft = {
+            selectedIndex: null,
+            solved: false,
+            checked: false,
+            feedback: '',
+            feedbackType: '',
+            feedbackTitle: ''
+          };
+        } else if (exercise.kind === 'fill') {
+          draft = {
+            values: exercise.parts.map((part) => (part.blank ? '' : null)).filter((value) => value !== null),
+            solved: false,
+            checked: false,
+            feedback: '',
+            feedbackType: '',
+            feedbackTitle: ''
+          };
+        } else if (exercise.kind === 'compose') {
+          const bank = shuffle(exercise.bank);
+          draft = {
+            bank,
+            selectedWords: [],
+            solved: false,
+            checked: false,
+            feedback: '',
+            feedbackType: '',
+            feedbackTitle: ''
+          };
+        } else if (exercise.kind === 'voice') {
+          draft = {
+            transcript: '',
+            supported: Boolean(SpeechRecognitionCtor),
+            listening: false,
+            solved: false,
+            checked: false,
+            feedback: '',
+            feedbackType: '',
+            feedbackTitle: ''
+          };
+        } else {
+          draft = {};
+        }
+
+        session.answers[key] = draft;
+        return draft;
+      }
+
+      function getCurrentDraft() {
+        const lesson = getSelectedLesson();
+        if (!state.session || state.session.lessonId !== lesson.id) return null;
+        return ensureDraft(state.session, lesson, lesson.exercises[state.session.exerciseIndex], state.session.exerciseIndex);
+      }
+
+      function startLesson(lessonId) {
+        const lesson = getLessonById(lessonId);
+        if (!lesson || !isLessonUnlocked(lesson.id)) {
+          toast('Primero desbloquea esta lección');
+          return;
+        }
+
+        state.selectedLessonId = lesson.id;
+        state.session = {
+          lessonId: lesson.id,
+          exerciseIndex: 0,
+          mistakes: 0,
+          lessonXp: 0,
+          answers: Object.create(null),
+          finished: false,
+          result: null
+        };
+        saveState();
+        render();
+        toast(`Comenzaste: ${lesson.title}`);
+      }
+
+      function restartLesson(lessonId) {
+        state.hearts = 5;
+        state.session = {
+          lessonId,
+          exerciseIndex: 0,
+          mistakes: 0,
+          lessonXp: 0,
+          answers: Object.create(null),
+          finished: false,
+          result: null
+        };
+        saveState();
+        render();
+        toast('Lección reiniciada');
+      }
+
+      function continueLesson() {
+        const session = state.session;
+        if (!session || session.finished) return;
+        const lesson = getLessonById(session.lessonId);
+        if (!lesson) return;
+
+        const isLast = session.exerciseIndex >= lesson.exercises.length - 1;
+        if (isLast) {
+          completeLesson(lesson, session);
+          return;
+        }
+
+        session.exerciseIndex += 1;
+        saveState();
+        render();
+      }
+
+      function completeLesson(lesson, session) {
+        const mastery = masteryForMistakes(session.mistakes);
+        const currentCompleted = state.completed[lesson.id] || { mastery: 0, attempts: 0, mistakes: Infinity };
+        const bestMastery = Math.max(currentCompleted.mastery || 0, mastery);
+        const bonusXp = LESSON_BONUS + bestMastery * 5;
+        const lessonXp = session.lessonXp;
+
+        state.xp += bonusXp;
+        session.finished = true;
+        session.result = {
+          mastery: bestMastery,
+          bonusXp,
+          lessonXp,
+          mistakes: session.mistakes
+        };
+
+        state.completed[lesson.id] = {
+          mastery: bestMastery,
+          attempts: (currentCompleted.attempts || 0) + 1,
+          mistakes: Math.min(currentCompleted.mistakes || Infinity, session.mistakes),
+          completedAt: todayKey()
+        };
+
+        if (session.mistakes === 0) {
+          toast('Perfecto: corona de 3 niveles');
+        } else {
+          toast(`Lección completada con ${session.mistakes} error${session.mistakes === 1 ? '' : 'es'}`);
+        }
+
+        saveState();
+        render();
+      }
+
+      function masteryForMistakes(mistakes) {
+        if (mistakes === 0) return 3;
+        if (mistakes <= 2) return 2;
+        return 1;
+      }
+
+      function getDraftAnswerValues(exercise, draft) {
+        if (exercise.kind === 'mcq') return draft.selectedIndex;
+        if (exercise.kind === 'fill') return draft.values;
+        if (exercise.kind === 'compose') return draft.selectedWords;
+        if (exercise.kind === 'voice') return draft.transcript;
+        return null;
+      }
+
+      function evaluateExercise(exercise, draft) {
+        if (exercise.kind === 'mcq') {
+          if (draft.selectedIndex === null || draft.selectedIndex === undefined) {
+            return { ready: false, correct: false, message: 'Elige una opción antes de comprobar.' };
+          }
+          return {
+            ready: true,
+            correct: draft.selectedIndex === exercise.correctIndex,
+            message: draft.selectedIndex === exercise.correctIndex ? 'Correcto' : `La opción correcta era: ${exercise.options[exercise.correctIndex]}`
+          };
+        }
+
+        if (exercise.kind === 'fill') {
+          const answer = exercise.parts.filter((part) => part.blank).map((part) => part.blank.answer);
+          const values = draft.values.map((value) => value.trim()).filter(Boolean);
+          if (!values.length) return { ready: false, correct: false, message: 'Rellena la frase antes de comprobar.' };
+          const normalizedAnswer = normalizeText(answer.join(' '));
+          const normalizedValue = normalizeText(values.join(' '));
+          return {
+            ready: true,
+            correct: normalizedAnswer === normalizedValue,
+            message: normalizedAnswer === normalizedValue ? 'Perfecto' : `La respuesta esperada era: ${answer.join(' ')}`
+          };
+        }
+
+        if (exercise.kind === 'compose') {
+          const expected = normalizeText(exercise.answer.join(' '));
+          const actual = normalizeText(draft.selectedWords.join(' '));
+          if (!draft.selectedWords.length) return { ready: false, correct: false, message: 'Construye la frase antes de comprobar.' };
+          return {
+            ready: true,
+            correct: expected === actual,
+            message: expected === actual ? 'Bien ordenado' : `La frase correcta era: ${exercise.answer.join(' ')}`
+          };
+        }
+
+        if (exercise.kind === 'voice') {
+          const transcript = draft.transcript.trim();
+          if (!transcript) return { ready: false, correct: false, message: 'Habla o escribe la frase antes de comprobar.' };
+          const expected = exercise.answer;
+          const score = similarity(expected, transcript);
+          const acceptable = score >= 0.58 || normalizeText(transcript).includes(normalizeText(expected)) || normalizeText(expected).includes(normalizeText(transcript));
+          return {
+            ready: true,
+            correct: acceptable,
+            score,
+            message: acceptable
+              ? 'Tu pronunciación está bastante cerca.'
+              : `La mejor coincidencia fue: ${expected}`
+          };
+        }
+
+        return { ready: false, correct: false, message: 'Ejercicio no soportado.' };
+      }
+
+      function markExerciseResult(exercise, draft, result, lesson, session) {
+        draft.checked = true;
+        draft.solved = result.correct;
+        draft.feedback = result.message;
+        draft.feedbackTitle = result.correct ? '¡Correcto!' : 'Aún no';
+        draft.feedbackType = result.correct ? 'good' : 'bad';
+        session.answers[`${lesson.id}:${session.exerciseIndex}`] = draft;
+      }
+
+      function handleCheck() {
+        const lesson = getSelectedLesson();
+        const session = state.session;
+        if (!session || session.lessonId !== lesson.id || session.finished) return;
+        const exercise = lesson.exercises[session.exerciseIndex];
+        const draft = ensureDraft(session, lesson, exercise, session.exerciseIndex);
+        const result = evaluateExercise(exercise, draft);
+
+        if (!result.ready) {
+          draft.feedback = result.message;
+          draft.feedbackTitle = 'Falta algo';
+          draft.feedbackType = 'bad';
+          saveState();
+          render();
+          return;
+        }
+
+        if (result.correct) {
+          draft.checked = true;
+          draft.solved = true;
+          draft.feedback = exercise.explanation || 'Correcto.';
+          draft.feedbackTitle = '¡Bien!';
+          draft.feedbackType = 'good';
+          session.lessonXp += EXERCISE_XP;
+          state.xp += EXERCISE_XP;
+          vibrate(40);
+          toast('¡Correcto!');
+        } else {
+          session.mistakes += 1;
+          state.hearts = Math.max(0, state.hearts - 1);
+          draft.checked = true;
+          draft.solved = false;
+          draft.feedback = exercise.explanation || result.message;
+          draft.feedbackTitle = 'Ups';
+          draft.feedbackType = 'bad';
+          vibrate([30, 30, 40]);
+          toast('Error: pierdes un corazón');
+        }
+
+        saveState();
+
+        if (!result.correct && state.hearts === 0) {
+          session.finished = true;
+          session.result = {
+            mastery: 0,
+            bonusXp: 0,
+            lessonXp: session.lessonXp,
+            mistakes: session.mistakes,
+            failed: true
+          };
+          state.session = session;
+          saveState();
+          render();
+          return;
+        }
+
+        state.session = session;
+        render();
+      }
+
+      function handleStartOrContinue() {
+        const lesson = getSelectedLesson();
+        const session = state.session;
+        if (session && session.lessonId === lesson.id && !session.finished) {
+          render();
+          return;
+        }
+        startLesson(lesson.id);
+      }
+
+      function handleRestartCurrent() {
+        const lesson = getSelectedLesson();
+        restartLesson(lesson.id);
+      }
+
+      function handleSkipToNextLesson() {
+        const lesson = getSelectedLesson();
+        const index = getLessonIndex(lesson.id);
+        const nextLesson = lessons[index + 1];
+        if (!nextLesson) {
+          state.session = null;
+          saveState();
+          render();
+          toast('Curso completo');
+          return;
+        }
+        state.selectedLessonId = nextLesson.id;
+        state.session = null;
+        saveState();
+        render();
+        toast(`Abres: ${nextLesson.title}`);
+      }
+
+      function showHint(exercise) {
+        toast(exercise.hint || 'Sigue practicando');
+      }
+
+      function handleComposeClick(button, lesson, session, exercise, draft) {
+        const bankIndex = Number(button.getAttribute('data-bank-index'));
+        const trayIndex = Number(button.getAttribute('data-tray-index'));
+        if (!Number.isNaN(bankIndex)) {
+          const word = draft.bank.splice(bankIndex, 1)[0];
+          if (word) draft.selectedWords.push(word);
+          saveState();
+          render();
+          return;
+        }
+
+        if (!Number.isNaN(trayIndex)) {
+          const removed = draft.selectedWords.splice(trayIndex, 1)[0];
+          if (removed) draft.bank.push(removed);
+          saveState();
+          render();
+        }
+      }
+
+      refs.playerBody.addEventListener('click', (event) => {
+        const lesson = getSelectedLesson();
+        const session = state.session;
+        if (!session || session.lessonId !== lesson.id) {
+          if (event.target.closest('#startLessonNow')) {
+            handleStartOrContinue();
+          }
+          if (event.target.closest('#reviewMapBtn')) {
+            toast('Elige una lección abierta del mapa');
+          }
+          return;
+        }
+
+        if (session.finished) {
+          if (event.target.closest('#resultNextBtn')) {
+            if (session.result?.failed) {
+              handleRestartCurrent();
+            } else {
+              handleSkipToNextLesson();
+            }
+          }
+          if (event.target.closest('#resultReplayBtn')) {
+            if (session.result?.failed) {
+              state.session = null;
+              saveState();
+              render();
+              toast('Vuelve al mapa cuando quieras');
+            } else {
+              handleRestartCurrent();
+            }
+          }
+          return;
+        }
+
+        const exercise = lesson.exercises[session.exerciseIndex];
+        const draft = ensureDraft(session, lesson, exercise, session.exerciseIndex);
+
+        if (event.target.closest('#startLessonNow')) {
+          handleStartOrContinue();
+          return;
+        }
+
+        if (event.target.closest('#reviewMapBtn')) {
+          toast('El mapa se mantiene a la izquierda');
+          return;
+        }
+
+        if (event.target.closest('[data-check]')) {
+          handleCheck();
+          return;
+        }
+
+        if (event.target.closest('[data-continue]')) {
+          continueLesson();
+          return;
+        }
+
+        if (event.target.closest('[data-hint]')) {
+          showHint(exercise);
+          return;
+        }
+
+        if (event.target.closest('[data-abandon]')) {
+          const confirmCancel = window.confirm('¿Cancelar esta lección y volver al mapa?');
+          if (!confirmCancel) return;
+          state.session = null;
+          saveState();
+          render();
+          toast('Lección cancelada');
+          return;
+        }
+
+        if (event.target.closest('[data-speak]')) {
+          const text = event.target.closest('[data-speak]').getAttribute('data-speak');
+          speak(text);
+          return;
+        }
+
+        if (event.target.closest('[data-voice-speak]')) {
+          speak(exercise.speaker || exercise.answer);
+          return;
+        }
+
+        if (event.target.closest('[data-voice-record]')) {
+          const draftInput = refs.playerBody.querySelector('[data-voice-input]');
+          if (!draft.supported) {
+            toast('Tu navegador no soporta reconocimiento de voz. Usa el plan B.');
+            return;
+          }
+
+          const recognition = new SpeechRecognitionCtor();
+          recognition.lang = 'es-ES';
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
+          draft.listening = true;
+          toast('Escuchando...');
+
+          recognition.onresult = (ev) => {
+            const transcript = ev.results[0][0].transcript || '';
+            draft.transcript = transcript;
+            if (draftInput) draftInput.value = transcript;
+            draft.listening = false;
+            saveState();
+            const draftResult = evaluateExercise(exercise, draft);
+            if (draftResult.ready && draftResult.correct) {
+              handleCheck();
+            } else {
+              draft.feedback = 'Te escuché. Revisa la frase o pulsa comprobar para evaluarla.';
+              draft.feedbackTitle = 'Te escuché';
+              draft.feedbackType = 'bad';
+              saveState();
+              render();
+            }
+          };
+
+          recognition.onerror = () => {
+            draft.listening = false;
+            draft.feedback = 'No pude usar el micrófono. Prueba de nuevo o escribe la respuesta.';
+            draft.feedbackTitle = 'Micrófono no disponible';
+            draft.feedbackType = 'bad';
+            saveState();
+            render();
+            toast('Fallo de voz');
+          };
+
+          recognition.onend = () => {
+            draft.listening = false;
+          };
+
+          try {
+            recognition.start();
+          } catch {
+            draft.listening = false;
+            toast('No se pudo iniciar la voz');
+          }
+          return;
+        }
+
+        if (event.target.closest('[data-choice]')) {
+          const index = Number(event.target.closest('[data-choice]').getAttribute('data-choice'));
+          draft.selectedIndex = index;
+          draft.checked = false;
+          draft.solved = false;
+          draft.feedback = '';
+          draft.feedbackType = '';
+          draft.feedbackTitle = '';
+          saveState();
+          render();
+          return;
+        }
+
+        if (event.target.closest('[data-bank-index]') || event.target.closest('[data-tray-index]')) {
+          handleComposeClick(event.target.closest('button'), lesson, session, exercise, draft);
+          return;
+        }
+      });
+
+      refs.playerBody.addEventListener('input', (event) => {
+        const lesson = getSelectedLesson();
+        const session = state.session;
+        if (!session || session.lessonId !== lesson.id || session.finished) return;
+        const exercise = lesson.exercises[session.exerciseIndex];
+        const draft = ensureDraft(session, lesson, exercise, session.exerciseIndex);
+
+        if (exercise.kind === 'fill' && event.target.matches('[data-fill-index]')) {
+          const index = Number(event.target.getAttribute('data-fill-index'));
+          draft.values[index] = event.target.value;
+          draft.checked = false;
+          draft.solved = false;
+          saveState();
+        }
+
+        if (exercise.kind === 'voice' && event.target.matches('[data-voice-input]')) {
+          draft.transcript = event.target.value;
+          draft.checked = false;
+          draft.solved = false;
+          saveState();
+        }
+      });
+
+      function renderExerciseCardPlaceholder() {
+        return `<div class="empty-state">Selecciona una lección abierta del mapa para empezar a practicar.</div>`;
+      }
+
+      function renderPlayerFallback() {
+        refs.playerBody.innerHTML = renderExerciseCardPlaceholder();
+      }
+
+      function renderStateSafetyNet() {
+        const selected = getSelectedLesson();
+        if (!selected) {
+          renderPlayerFallback();
+          return;
+        }
+      }
+
+      function renderInitialBody() {
+        const lesson = getSelectedLesson();
+        if (!lesson) {
+          renderPlayerFallback();
+        }
+      }
+
+      function setSelectedLesson(id) {
+        if (!isLessonUnlocked(id)) return;
+        state.selectedLessonId = id;
+        saveState();
+        render();
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        const lesson = getSelectedLesson();
+        const session = state.session;
+        if (!session || session.lessonId !== lesson.id || session.finished) return;
+        const draft = getCurrentDraft();
+        if (!draft) return;
+        if (draft.solved) {
+          continueLesson();
+        } else {
+          handleCheck();
+        }
+      });
     </script>
   </body>
 </html>
