@@ -1,7 +1,10 @@
 ---
 name: swarm-advanced
-description: |
-  Advanced swarm orchestration patterns for research, development, testing, and complex distributed workflows
+description: Advanced swarm orchestration patterns for research, development, testing, and complex distributed workflows
+version: 2.0.0
+category: orchestration
+tags: [swarm, distributed, parallel, research, testing, development, coordination]
+author: Claude Flow Team
 ---
 
 # Advanced Swarm Orchestration

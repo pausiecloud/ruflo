@@ -1,7 +1,19 @@
 ---
 name: github-multi-repo
-description: |
-  Multi-repository coordination, synchronization, and architecture management with AI swarm orchestration
+version: 1.0.0
+description: Multi-repository coordination, synchronization, and architecture management with AI swarm orchestration
+category: github-integration
+tags: [multi-repo, synchronization, architecture, coordination, github]
+author: Claude Flow Team
+requires:
+  - ruv-swarm@^1.0.11
+  - gh-cli@^2.0.0
+capabilities:
+  - cross-repository coordination
+  - package synchronization
+  - architecture optimization
+  - template management
+  - distributed workflows
 ---
 
 # GitHub Multi-Repository Coordination Skill
