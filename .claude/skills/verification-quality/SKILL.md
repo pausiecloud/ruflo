@@ -1,7 +1,9 @@
 ---
 name: "Verification & Quality Assurance"
-description: |
-  Comprehensive truth scoring, code quality verification, and automatic rollback system with 0.95 accuracy threshold for ensuring high-quality agent outputs and codebase reliability.
+description: "Comprehensive truth scoring, code quality verification, and automatic rollback system with 0.95 accuracy threshold for ensuring high-quality agent outputs and codebase reliability."
+version: "2.0.0"
+category: "quality-assurance"
+tags: ["verification", "truth-scoring", "quality", "rollback", "metrics", "ci-cd"]
 ---
 
 # Verification & Quality Assurance Skill

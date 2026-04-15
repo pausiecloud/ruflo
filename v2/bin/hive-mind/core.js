@@ -838,7 +838,24 @@ export class HiveMindCore extends EventEmitter {
 
     // Scale down if too many idle workers
     if (idleWorkers > pendingTasks + 2 && this.state.workers.size > 2) {
-      // TODO: Implement worker removal
+      const excessWorkers = idleWorkers - pendingTasks - 2;
+      const workersToRemove = Array.from(this.state.workers.values())
+        .filter((w) => w.status === 'idle')
+        .slice(0, Math.min(excessWorkers, this.state.workers.size - 2));
+
+      for (const worker of workersToRemove) {
+        this.state.workers.delete(worker.id);
+        console.log(`Auto-scaled: Removed idle ${worker.type} worker ${worker.id}`);
+      }
+
+      if (workersToRemove.length > 0) {
+        await this.mcpWrapper.storeMemory(
+          this.state.swarmId,
+          'workers',
+          Array.from(this.state.workers.values()),
+          'system',
+        );
+      }
     }
   }
 
