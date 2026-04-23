@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empires - RTS Strategy Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    html,
+    body,
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+
+    /* HUD Elements */
+    #hud {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      border-top: 2px solid #FFD700;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .resource-display {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .resource {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .resource-icon {
+      width: 20px;
+      height: 20px;
+      background: #FFD700;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .resource-value {
+      font-weight: bold;
+      min-width: 60px;
+    }
+
+    #selection-info {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #FFD700;
+      padding: 12px;
+      border-radius: 4px;
+      max-width: 300px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      display: none;
+    }
+
+    #selection-info.active {
+      display: block;
+    }
+
+    .selection-header {
+      color: #FFD700;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .selection-stat {
+      margin: 4px 0;
+      color: #aaa;
+    }
+
+    /* Mobile Controls */
+    #radial-menu {
+      position: fixed;
+      display: none;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.3), rgba(0, 0, 0, 0.8));
+      border: 2px solid #FFD700;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    #radial-menu.active {
+      display: block;
+      pointer-events: auto;
+    }
+
+    /* Debug Info */
+    #debug-info {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00FF00;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #00FF00;
+      max-width: 250px;
+      display: none;
+    }
+
+    #debug-info.active {
+      display: block;
+    }
+
+    /* Loading screen */
+    #loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-family: 'Courier New', monospace;
+    }
+
+    #loading.complete {
+      display: none;
+    }
+
+    .loading-title {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #FFD700;
+      text-shadow: 0 0 10px #FFD700;
+    }
+
+    .loading-bar {
+      width: 300px;
+      height: 20px;
+      border: 2px solid #FFD700;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      color: #aaa;
+      font-size: 12px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #hud {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .resource-display {
+        width: 100%;
+        justify-content: center;
+      }
+
+      #selection-info {
+        max-width: calc(100vw - 24px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="resource-display">
+        <div class="resource">
+          <div class="resource-icon">🌾</div>
+          <span>Food:</span>
+          <span class="resource-value" id="food-count">0</span>
+        </div>
+        <div class="resource">
+          <div class="resource-icon">🌲</div>
+          <span>Wood:</span>
+          <span class="resource-value" id="wood-count">0</span>
+        </div>
+        <div class="resource">
+          <div class="resource-icon">💰</div>
+          <span>Gold:</span>
+          <span class="resource-value" id="gold-count">0</span>
+        </div>
+        <div class="resource">
+          <div class="resource-icon">⚒️</div>
+          <span>Ore:</span>
+          <span class="resource-value" id="ore-count">0</span>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: #888">Empires RTS v0.1 - Mobile First</div>
+    </div>
+
+    <!-- Selection Info Panel -->
+    <div id="selection-info">
+      <div class="selection-header" id="selection-name">Unit Selected</div>
+      <div class="selection-stat">Health: <span id="selection-health">--</span></div>
+      <div class="selection-stat">Status: <span id="selection-status">Idle</span></div>
+    </div>
+
+    <!-- Radial Menu -->
+    <div id="radial-menu"></div>
+
+    <!-- Debug Info -->
+    <div id="debug-info">
+      <div>FPS: <span id="debug-fps">--</span></div>
+      <div>Entities: <span id="debug-entities">0</span></div>
+      <div>Camera: <span id="debug-camera">0, 0</span></div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+      <div class="loading-title">EMPIRES</div>
+      <div class="loading-bar">
+        <div class="loading-bar-fill" id="loading-bar-fill"></div>
+      </div>
+      <div class="loading-text" id="loading-text">Initializing game engine...</div>
+    </div>
+  </div>
+
+  <script src="main.ts"></script>
+</body>
+</html>
