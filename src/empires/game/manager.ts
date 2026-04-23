@@ -11,9 +11,21 @@ import {
   Team,
   Pathfinding,
 } from '../core/components';
+import {
+  Projectile,
+  Morale,
+  Naval,
+  Animation,
+  Wreckage,
+} from '../core/components-advanced';
 import { RendererSystem } from '../systems/renderer';
 import { MovementSystem, CollisionSystem } from '../systems/movement';
 import { WorkerSystem } from '../systems/worker';
+import { CombatSystem } from '../systems/combat';
+import { MoraleSystem } from '../systems/morale';
+import { NavalSystem } from '../systems/naval';
+import { WrackageSystem } from '../systems/wreckage';
+import { AnimationSystem } from '../systems/animation';
 import { Pathfinder } from '../ai/pathfinding';
 
 export class GameManager {
@@ -22,6 +34,11 @@ export class GameManager {
   private movementSystem: MovementSystem;
   private collisionSystem: CollisionSystem;
   private workerSystem: WorkerSystem;
+  private combatSystem: CombatSystem;
+  private moraleSystem: MoraleSystem;
+  private navalSystem: NavalSystem;
+  private wrackageSystem: WrackageSystem;
+  private animationSystem: AnimationSystem;
   private pathfinder: Pathfinder;
 
   private lastTime: number = Date.now();
@@ -39,12 +56,22 @@ export class GameManager {
     this.movementSystem = new MovementSystem();
     this.collisionSystem = new CollisionSystem();
     this.workerSystem = new WorkerSystem();
+    this.combatSystem = new CombatSystem();
+    this.moraleSystem = new MoraleSystem();
+    this.navalSystem = new NavalSystem();
+    this.wrackageSystem = new WrackageSystem(this.world);
+    this.animationSystem = new AnimationSystem();
     this.pathfinder = new Pathfinder(this.mapWidth, this.mapHeight);
 
-    // Register systems with world
+    // Register systems with world (order matters for dependencies)
     this.world.registerSystem(this.movementSystem);
     this.world.registerSystem(this.collisionSystem);
     this.world.registerSystem(this.workerSystem);
+    this.world.registerSystem(this.animationSystem);
+    this.world.registerSystem(this.moraleSystem);
+    this.world.registerSystem(this.navalSystem);
+    this.world.registerSystem(this.combatSystem);
+    this.world.registerSystem(this.wrackageSystem);
     this.world.registerSystem(this.renderer);
 
     this.collisionSystem.setMapBounds(this.mapWidth, this.mapHeight);
@@ -109,9 +136,13 @@ export class GameManager {
     entity.addComponent(new Unit('worker', faction, 80, 0, 0));
     entity.addComponent(new Worker());
     entity.addComponent(new Pathfinding());
+    entity.addComponent(new Morale());
+    entity.addComponent(new Animation(4, 1.0));
 
     this.movementSystem.addEntity(entity);
     this.workerSystem.addEntity(entity);
+    this.moraleSystem.addEntity(entity);
+    this.animationSystem.addEntity(entity);
     this.renderer.addEntity(entity);
 
     return entity;
@@ -126,8 +157,71 @@ export class GameManager {
     entity.addComponent(new Health(35, 2));
     entity.addComponent(new Unit('soldier', faction, 70, 16, 8));
     entity.addComponent(new Pathfinding());
+    entity.addComponent(new Morale());
+    entity.addComponent(new Animation(8, 0.6));
 
     this.movementSystem.addEntity(entity);
+    this.moraleSystem.addEntity(entity);
+    this.combatSystem.registerTargetableEntity(entity);
+    this.animationSystem.addEntity(entity);
+    this.renderer.addEntity(entity);
+
+    return entity;
+  }
+
+  createArcher(faction: string, x: number, y: number): Entity {
+    const entity = this.world.createEntity();
+
+    entity.addComponent(new Transform(x, y));
+    entity.addComponent(new Velocity(0, 0));
+    entity.addComponent(new Sprite(`archer_${faction}`, 32, 32));
+    entity.addComponent(new Health(20, 0));
+    entity.addComponent(new Unit('archer', faction, 60, 80, 6));
+    entity.addComponent(new Pathfinding());
+    entity.addComponent(new Morale());
+    entity.addComponent(new Animation(8, 0.7));
+
+    this.movementSystem.addEntity(entity);
+    this.moraleSystem.addEntity(entity);
+    this.combatSystem.registerTargetableEntity(entity);
+    this.animationSystem.addEntity(entity);
+    this.renderer.addEntity(entity);
+
+    return entity;
+  }
+
+  createTransport(faction: string, x: number, y: number): Entity {
+    const entity = this.world.createEntity();
+
+    entity.addComponent(new Transform(x, y));
+    entity.addComponent(new Velocity(0, 0));
+    entity.addComponent(new Sprite(`transport_${faction}`, 64, 48));
+    entity.addComponent(new Health(100, 3));
+    entity.addComponent(new Unit('transport', faction, 80, 0, 0));
+    entity.addComponent(new Naval('transport', 6));
+    entity.addComponent(new Pathfinding());
+
+    this.movementSystem.addEntity(entity);
+    this.navalSystem.addEntity(entity);
+    this.renderer.addEntity(entity);
+
+    return entity;
+  }
+
+  createWarship(faction: string, x: number, y: number): Entity {
+    const entity = this.world.createEntity();
+
+    entity.addComponent(new Transform(x, y));
+    entity.addComponent(new Velocity(0, 0));
+    entity.addComponent(new Sprite(`warship_${faction}`, 64, 48));
+    entity.addComponent(new Health(200, 5));
+    entity.addComponent(new Unit('warship', faction, 60, 200, 20));
+    entity.addComponent(new Naval('warship', 0));
+    entity.addComponent(new Pathfinding());
+
+    this.movementSystem.addEntity(entity);
+    this.navalSystem.addEntity(entity);
+    this.combatSystem.registerTargetableEntity(entity);
     this.renderer.addEntity(entity);
 
     return entity;
@@ -192,6 +286,84 @@ export class GameManager {
   // Map generation and obstacles
   setMapObstacle(x: number, y: number, width: number, height: number): void {
     this.pathfinder.setObstacle(x, y, width, height);
+  }
+
+  // Combat API
+  fireProjectile(attacker: Entity, target: Entity | null, damage: number, splashRadius: number = 0): void {
+    this.combatSystem.createProjectile(attacker, target, damage, splashRadius);
+  }
+
+  getCombatLog(): Array<{ projectileId: number; targetId: number; damage: number }> {
+    return this.combatSystem.getHitLog();
+  }
+
+  // Morale API
+  recordUnitDeath(faction: string): void {
+    this.moraleSystem.recordUnitDeath(faction);
+  }
+
+  recordVictory(faction: string, enemyCount: number): void {
+    this.moraleSystem.recordVictory(faction, enemyCount);
+  }
+
+  getMoraleReport(faction: string): {
+    averageMorale: number;
+    unitCount: number;
+    fearfulCount: number;
+    fervorCount: number;
+    casualtyRate: number;
+  } {
+    return this.moraleSystem.getMoraleReport(faction);
+  }
+
+  applyHeroAura(heroPower?: number): void {
+    this.moraleSystem.applyHeroAura(heroPower);
+  }
+
+  // Naval API
+  commandLoadUnits(shipEntity: Entity): void {
+    this.navalSystem.commandLoadUnits(shipEntity);
+  }
+
+  commandUnloadUnits(shipEntity: Entity, destX: number, destY: number): void {
+    this.navalSystem.commandUnloadUnits(shipEntity, destX, destY);
+  }
+
+  getFleetStatus(): Array<{ shipId: number; type: string; cargo: number; capacity: number }> {
+    return this.navalSystem.getFleetStatus();
+  }
+
+  // Wreckage API
+  createWreckageFromUnit(unitEntity: Entity): Entity | null {
+    return this.wrackageSystem.createWreckageFromUnit(unitEntity);
+  }
+
+  createWreckageFromBuilding(buildingEntity: Entity): Entity | null {
+    return this.wrackageSystem.createWreckageFromBuilding(buildingEntity);
+  }
+
+  commandWorkerToScrap(workerEntity: Entity, wreckageId: number): boolean {
+    return this.wrackageSystem.commandWorkerToScrap(workerEntity, wreckageId);
+  }
+
+  getWreckageReport(): Array<{
+    id: number;
+    type: string;
+    faction: string;
+    recovery: number;
+    x: number;
+    y: number;
+  }> {
+    return this.wrackageSystem.getWreckageReport();
+  }
+
+  // Animation API
+  playAnimation(entity: Entity, animationName: string, loop?: boolean): boolean {
+    return this.animationSystem.playAnimation(entity, animationName, loop);
+  }
+
+  stopAnimation(entity: Entity): void {
+    this.animationSystem.stopAnimation(entity);
   }
 
   getWorld(): World {
