@@ -1,6 +1,8 @@
-# 🎮 EMPIRES RTS - Mobile-First Real-Time Strategy Engine
+# 🎮 EMPIRES RTS v0.2 - Mobile-First Real-Time Strategy Engine
 
-**Empires** is a fusion of classic RTS gameplay (Age of Empires) with physics-driven combat (Total Annihilation), optimized for mobile and web. Built with TypeScript, Canvas rendering, and an Entity Component System (ECS) architecture.
+**Empires** is a fusion of classic RTS gameplay (Age of Empires) with physics-driven combat (Total Annihilation), optimized for mobile and web. Built with TypeScript, Canvas rendering, and a production-grade Entity Component System (ECS) architecture.
+
+**Status**: v0.2 - Advanced systems complete (Combat, Morale, Naval, Wreckage, Animation)
 
 ## 📋 Features
 
@@ -8,7 +10,11 @@
 - **Entity Component System (ECS)**: High-performance architecture for managing thousands of game objects
 - **60 FPS Target**: Optimized for mobile CPUs with delta-time based physics
 - **Worker-Based Economy**: AoE-style manual resource gathering + TA-style automated extractors
-- **Physics-Based Combat**: Projectiles with hitboxes, terrain height advantages, collision detection
+- **Physics-Based Combat**: Projectiles with gravity, ballistics, splash damage, and impact calculations
+- **Morale System**: Unit performance affected by nearby allies, heroes, and casualties
+- **Naval Warfare**: Transport ships, warships, and unit ferrying across archipelago
+- **Wreckage Reclamation**: Strategic resource recovery from destroyed units and buildings
+- **Animation System**: Sprite frame animations for all unit states
 - **A* Pathfinding**: Grid-based pathfinding optimized for mobile performance
 
 ### Game Systems
@@ -190,6 +196,11 @@ requestAnimationFrame() {
   MovementSystem.update()      // Apply velocity, pathfinding
   CollisionSystem.update()     // Boundary checking
   WorkerSystem.update()        // Gathering, building, AI
+  AnimationSystem.update()     // Sprite frame animations
+  MoraleSystem.update()        // Performance multipliers
+  NavalSystem.update()         // Ship movement, unit loading
+  CombatSystem.update()        // Projectiles, impacts, damage
+  WrackageSystem.update()      // Scrap recovery
   RendererSystem.update()      // Draw all entities
   
   repeat
@@ -198,6 +209,56 @@ requestAnimationFrame() {
 
 **Target**: 60 FPS (16.67ms per frame)
 **Mobile cap**: 33ms minimum (prevents overheating)
+
+## 🎖️ Advanced Systems (v0.2)
+
+### Combat System
+Physics-based projectiles with gravity, air drag, and impact damage. Damage scales with velocity (30-100%). Splash damage with configurable radius and falloff.
+
+```typescript
+gameManager.fireProjectile(archer, soldier, 6, splashRadius);
+const hits = gameManager.getCombatLog();
+```
+
+### Morale System
+Unit morale (0-100) affects performance through multipliers:
+- **Fearful** (< 30): 40% damage, 130% speed (panic)
+- **Steadfast**: 105% damage/armor (group bonus)
+- **Fervor** (> 80): 130% damage, 110% speed (winning)
+
+```typescript
+gameManager.recordUnitDeath('iron_horde');
+gameManager.recordVictory('solar_kingdom', 3);
+const report = gameManager.getMoraleReport('solar_kingdom');
+```
+
+### Naval System
+Transport ships (6 unit capacity), warships (artillery), and explorers enable archipelago conquest.
+
+```typescript
+const transport = gameManager.createTransport('solar_kingdom', 200, 500);
+gameManager.commandLoadUnits(transport);     // Auto-load nearby units
+gameManager.commandUnloadUnits(transport, 300, 600);
+```
+
+### Wreckage System
+Destroyed units leave scrap that workers can harvest for metal and wood. Strategic resource recovery at battle sites.
+
+```typescript
+const wreckage = gameManager.createWreckageFromUnit(deadSoldier);
+gameManager.commandWorkerToScrap(worker, wreckageId);
+const report = gameManager.getWreckageReport();
+```
+
+### Animation System
+Named sprite animations (idle, walk, attack, build, death) for all unit types with configurable frame counts and timing.
+
+```typescript
+gameManager.playAnimation(archer, 'attack', false);  // Non-looping
+gameManager.playAnimation(worker, 'gather', true);   // Looping
+```
+
+**Full documentation**: See `docs/SYSTEMS.md` for complete API reference and examples.
 
 ## 🔧 Extending the Game
 
@@ -256,21 +317,26 @@ world.registerSystem(new MySystem());
 
 ## 🐛 Known Issues
 
-- Physics collision detection is simplified (WIP)
-- Naval units not yet implemented
-- Morale system placeholder only
-- Wreckage/scrap system pending
+- Unit-to-unit collision detection simplified (bounding boxes only)
+- Naval pathfinding uses same grid as land (should use sea lanes)
+- Animation sprites not yet provided (using placeholder rectangles)
+- Tooltip UI not yet implemented
+- Damage numbers not floating above units
 
-## 🔮 Roadmap
+## 🔮 Roadmap (v0.3+)
 
-- [ ] Physics-based projectiles
-- [ ] Naval combat system
-- [ ] Morale & panic mechanics
-- [ ] Wreckage/resource reclamation
-- [ ] Multiplayer networking
-- [ ] Advanced unit AI (formations, retreats)
-- [ ] Campaign mode with story
-- [ ] Mod support via plugin system
+- [x] **v0.1** Physics-based projectiles ✅
+- [x] **v0.2** Naval combat system ✅
+- [x] **v0.2** Morale & panic mechanics ✅
+- [x] **v0.2** Wreckage/resource reclamation ✅
+- [ ] **v0.3** Animated sprite assets (16-bit art)
+- [ ] **v0.3** Advanced unit AI (formations, retreats, tactics)
+- [ ] **v0.3** Hero units with special abilities
+- [ ] **v0.4** Campaign mode with story missions
+- [ ] **v0.4** Multiplayer networking (WebSocket/P2P)
+- [ ] **v0.5** Map generation algorithm (procedural archipelago)
+- [ ] **v0.5** Mod support via plugin system
+- [ ] **v1.0** Stable release candidate
 
 ## 📝 Development Notes
 
