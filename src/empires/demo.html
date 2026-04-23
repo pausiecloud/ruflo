@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>EMPIRES RTS v0.2 - Mobile Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0a0a0a;
+      color: #fff;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    #hud {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.9);
+      border-top: 2px solid #FFD700;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      font-size: 12px;
+      z-index: 100;
+    }
+
+    .resource {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .resource-icon {
+      width: 16px;
+      height: 16px;
+      background: #FFD700;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    #debug {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00FF00;
+      padding: 12px;
+      font-size: 11px;
+      color: #00FF00;
+      max-width: 250px;
+      z-index: 50;
+      font-family: 'Courier New', monospace;
+    }
+
+    #morale-panel {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #FF6B6B;
+      padding: 12px;
+      font-size: 11px;
+      color: #FF6B6B;
+      max-width: 200px;
+      z-index: 50;
+      font-family: 'Courier New', monospace;
+    }
+
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid #FFD700;
+      padding: 30px;
+      text-align: center;
+      border-radius: 8px;
+      z-index: 9999;
+    }
+
+    #loading.done {
+      display: none;
+    }
+
+    .loading-title {
+      font-size: 28px;
+      color: #FFD700;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #FFD700;
+    }
+
+    .loading-text {
+      font-size: 12px;
+      color: #aaa;
+      margin: 10px 0;
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 15px;
+      border: 1px solid #FFD700;
+      background: #1a1a1a;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      width: 100%;
+      animation: progress 2s infinite;
+    }
+
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    #testPanel {
+      position: absolute;
+      bottom: 80px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00FF00;
+      padding: 12px;
+      font-size: 11px;
+      color: #00FF00;
+      max-width: 180px;
+      z-index: 50;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .test-btn {
+      display: block;
+      width: 100%;
+      padding: 6px;
+      margin: 4px 0;
+      background: #00AA00;
+      color: #000;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .test-btn:active {
+      background: #00FF00;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="loading">
+      <div class="loading-title">EMPIRES</div>
+      <div class="loading-bar">
+        <div class="loading-bar-fill"></div>
+      </div>
+      <div class="loading-text">Inicializando motor RTS...</div>
+      <div class="loading-text" id="loadStatus">Preparando canvas...</div>
+    </div>
+
+    <div id="hud">
+      <div class="resource">
+        <div class="resource-icon">🌾</div>
+        <span>Food: <strong id="food">0</strong></span>
+      </div>
+      <div class="resource">
+        <div class="resource-icon">🌲</div>
+        <span>Wood: <strong id="wood">0</strong></span>
+      </div>
+      <div class="resource">
+        <div class="resource-icon">💰</div>
+        <span>Gold: <strong id="gold">0</strong></span>
+      </div>
+      <div class="resource">
+        <div class="resource-icon">⚒️</div>
+        <span>Ore: <strong id="ore">0</strong></span>
+      </div>
+      <div style="font-size: 10px; color: #888">v0.2 | Entities: <span id="entity-count">0</span></div>
+    </div>
+
+    <div id="debug">
+      FPS: <span id="fps">60</span><br />
+      Entities: <span id="debug-entities">0</span><br />
+      Camera: <span id="camera">0, 0</span><br />
+      <span id="debug-extra"></span>
+    </div>
+
+    <div id="morale-panel">
+      <strong>Morale Report</strong><br />
+      Solar: <span id="solar-morale">—</span><br />
+      Iron: <span id="iron-morale">—</span><br />
+      <button class="test-btn" onclick="testMorale()">Test Morale</button>
+    </div>
+
+    <div id="testPanel">
+      <strong>Test Suite</strong><br />
+      <button class="test-btn" onclick="testCreateArcher()">+ Archer</button>
+      <button class="test-btn" onclick="testCreateSoldier()">+ Soldier</button>
+      <button class="test-btn" onclick="testCreateTransport()">+ Transport</button>
+      <button class="test-btn" onclick="testFireProjectile()">Fire!</button>
+      <button class="test-btn" onclick="testCreateWrackage()">Wreckage</button>
+      <button class="test-btn" onclick="testNaval()">Naval</button>
+      <button class="test-btn" onclick="testAnimation()">Animate</button>
+      <button class="test-btn" onclick="testPathfind()">Pathfind</button>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // EMPIRES RTS v0.2 - INLINE ENGINE
+    // ============================================
+
+    // Entity-Component System
+    class Entity {
+      constructor(id) {
+        this.id = id;
+        this.components = new Map();
+      }
+
+      addComponent(component) {
+        this.components.set(component.id, component);
+        return component;
+      }
+
+      getComponent(id) {
+        return this.components.get(id);
+      }
+
+      hasComponent(id) {
+        return this.components.has(id);
+      }
+
+      removeComponent(id) {
+        this.components.delete(id);
+      }
+
+      getAllComponents() {
+        return Array.from(this.components.values());
+      }
+    }
+
+    class World {
+      constructor() {
+        this.entities = new Map();
+        this.systems = new Map();
+        this.nextEntityId = 1;
+      }
+
+      createEntity() {
+        const entity = new Entity(this.nextEntityId++);
+        this.entities.set(entity.id, entity);
+        return entity;
+      }
+
+      getEntity(id) {
+        return this.entities.get(id);
+      }
+
+      destroyEntity(id) {
+        this.entities.delete(id);
+      }
+
+      registerSystem(system) {
+        this.systems.set(system.id, system);
+      }
+
+      update(dt) {
+        this.systems.forEach(system => system.update(dt));
+      }
+
+      getAllEntities() {
+        return Array.from(this.entities.values());
+      }
+    }
+
+    // Components
+    class Transform {
+      constructor(x = 0, y = 0) {
+        this.id = 'transform';
+        this.x = x;
+        this.y = y;
+        this.rotation = 0;
+        this.scale = 1;
+      }
+    }
+
+    class Velocity {
+      constructor(vx = 0, vy = 0) {
+        this.id = 'velocity';
+        this.vx = vx;
+        this.vy = vy;
+      }
+    }
+
+    class Sprite {
+      constructor(name, w = 32, h = 32) {
+        this.id = 'sprite';
+        this.textureName = name;
+        this.width = w;
+        this.height = h;
+        this.frameIndex = 0;
+      }
+    }
+
+    class Health {
+      constructor(max = 100, armor = 0) {
+        this.id = 'health';
+        this.current = max;
+        this.max = max;
+        this.armor = armor;
+      }
+
+      takeDamage(dmg) {
+        const mitigated = Math.max(0, dmg - this.armor);
+        this.current = Math.max(0, this.current - mitigated);
+      }
+
+      isAlive() {
+        return this.current > 0;
+      }
+    }
+
+    class Unit {
+      constructor(type, faction, speed, range, damage) {
+        this.id = 'unit';
+        this.type = type;
+        this.faction = faction;
+        this.speed = speed;
+        this.attackRange = range;
+        this.attackDamage = damage;
+      }
+    }
+
+    class Morale {
+      constructor() {
+        this.id = 'morale';
+        this.current = 100;
+        this.max = 100;
+        this.state = 'normal';
+        this.damageMultiplier = 1;
+        this.speedMultiplier = 1;
+      }
+
+      takeCasualty() {
+        this.current = Math.max(0, this.current - 5);
+      }
+
+      witnessVictory(count) {
+        this.current = Math.min(this.max, this.current + count * 2);
+      }
+
+      update() {
+        if (this.current < 30) {
+          this.state = 'fearful';
+          this.damageMultiplier = 0.4;
+          this.speedMultiplier = 1.3;
+        } else if (this.current > 80) {
+          this.state = 'fervor';
+          this.damageMultiplier = 1.3;
+          this.speedMultiplier = 1.1;
+        } else {
+          this.state = 'normal';
+          this.damageMultiplier = 1;
+          this.speedMultiplier = 1;
+        }
+      }
+    }
+
+    class Wreckage {
+      constructor(type, faction) {
+        this.id = 'wreckage';
+        this.type = type;
+        this.faction = faction;
+        this.recoveryProgress = 0;
+      }
+    }
+
+    class Naval {
+      constructor(type, capacity) {
+        this.id = 'naval';
+        this.type = type;
+        this.capacity = capacity;
+        this.cargo = [];
+      }
+
+      canLoadUnit() {
+        return this.cargo.length < this.capacity;
+      }
+
+      loadUnit(id) {
+        if (this.canLoadUnit()) {
+          this.cargo.push(id);
+          return true;
+        }
+        return false;
+      }
+    }
+
+    // Systems
+    class RendererSystem {
+      constructor(canvas) {
+        this.id = 'renderer';
+        this.requiredComponents = ['transform', 'sprite'];
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.cameraX = 1000;
+        this.cameraY = 1000;
+        this.zoom = 1;
+        this.factionColors = {
+          'solar_kingdom': '#FFD700',
+          'iron_horde': '#808080',
+          'abyss_cult': '#8B008B',
+          'amber_merchants': '#FF8C00',
+          'neutral': '#AAAAAA'
+        };
+      }
+
+      update() {
+        // Clear
+        this.ctx.fillStyle = '#1a1a1a';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw grid
+        this.drawGrid();
+
+        // Draw entities
+        world.getAllEntities().forEach(entity => {
+          if (!entity.hasComponent('transform') || !entity.hasComponent('sprite')) return;
+
+          const t = entity.getComponent('transform');
+          const s = entity.getComponent('sprite');
+          const h = entity.getComponent('health');
+          const u = entity.getComponent('unit');
+
+          const screenX = (t.x - this.cameraX) * this.zoom + this.canvas.width / 2;
+          const screenY = (t.y - this.cameraY) * this.zoom + this.canvas.height / 2;
+
+          // Draw unit
+          let color = '#888';
+          if (u) {
+            color = this.factionColors[u.faction] || '#fff';
+          } else if (entity.hasComponent('wreckage')) {
+            color = '#666';
+          }
+
+          this.ctx.fillStyle = color;
+          this.ctx.fillRect(screenX - 16, screenY - 16, 32, 32);
+
+          // Health bar
+          if (h && h.max > 0) {
+            const healthPct = h.current / h.max;
+            this.ctx.fillStyle = healthPct > 0.5 ? '#00FF00' : healthPct > 0.25 ? '#FFD700' : '#FF0000';
+            this.ctx.fillRect(screenX - 16, screenY - 22, 32 * healthPct, 3);
+          }
+
+          // Label
+          this.ctx.fillStyle = '#aaa';
+          this.ctx.font = '10px Courier';
+          this.ctx.textAlign = 'center';
+          if (s.textureName) {
+            this.ctx.fillText(s.textureName.substring(0, 6), screenX, screenY + 28);
+          }
+        });
+      }
+
+      drawGrid() {
+        this.ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        this.ctx.lineWidth = 1;
+        const cellSize = 100;
+
+        for (let x = -500; x < 500; x += cellSize) {
+          const sx = (x - this.cameraX) * this.zoom + this.canvas.width / 2;
+          this.ctx.beginPath();
+          this.ctx.moveTo(sx, 0);
+          this.ctx.lineTo(sx, this.canvas.height);
+          this.ctx.stroke();
+        }
+
+        for (let y = -500; y < 500; y += cellSize) {
+          const sy = (y - this.cameraY) * this.zoom + this.canvas.height / 2;
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, sy);
+          this.ctx.lineTo(this.canvas.width, sy);
+          this.ctx.stroke();
+        }
+      }
+    }
+
+    class MovementSystem {
+      constructor() {
+        this.id = 'movement';
+        this.requiredComponents = ['transform', 'velocity'];
+      }
+
+      update(dt) {
+        world.getAllEntities().forEach(entity => {
+          if (!entity.hasComponent('transform') || !entity.hasComponent('velocity')) return;
+
+          const t = entity.getComponent('transform');
+          const v = entity.getComponent('velocity');
+
+          t.x += v.vx * dt;
+          t.y += v.vy * dt;
+
+          v.vx *= 0.95;
+          v.vy *= 0.95;
+
+          // Boundary
+          if (t.x < 0) t.x = 0;
+          if (t.y < 0) t.y = 0;
+          if (t.x > 2000) t.x = 2000;
+          if (t.y > 2000) t.y = 2000;
+        });
+      }
+    }
+
+    class MoraleSystem {
+      constructor() {
+        this.id = 'morale';
+        this.requiredComponents = ['morale'];
+        this.deaths = {};
+      }
+
+      update(dt) {
+        world.getAllEntities().forEach(entity => {
+          const m = entity.getComponent('morale');
+          if (m) m.update();
+        });
+      }
+
+      recordDeath(faction) {
+        world.getAllEntities().forEach(entity => {
+          const m = entity.getComponent('morale');
+          const u = entity.getComponent('unit');
+          if (m && u && u.faction === faction) {
+            m.takeCasualty();
+          }
+        });
+      }
+
+      recordVictory(faction, count) {
+        world.getAllEntities().forEach(entity => {
+          const m = entity.getComponent('morale');
+          const u = entity.getComponent('unit');
+          if (m && u && u.faction === faction) {
+            m.witnessVictory(count);
+          }
+        });
+      }
+    }
+
+    // Game Manager
+    class GameManager {
+      constructor(canvas) {
+        this.world = new World();
+        this.renderer = new RendererSystem(canvas);
+        this.movement = new MovementSystem();
+        this.morale = new MoraleSystem();
+
+        this.world.registerSystem(this.movement);
+        this.world.registerSystem(this.morale);
+        this.world.registerSystem(this.renderer);
+
+        this.lastTime = Date.now();
+        this.frameCount = 0;
+        this.fpsTime = 0;
+        this.currentFps = 60;
+      }
+
+      start() {
+        this.gameLoop();
+      }
+
+      gameLoop = () => {
+        const now = Date.now();
+        const dt = Math.min((now - this.lastTime) / 1000, 0.033);
+        this.lastTime = now;
+
+        this.world.update(dt);
+
+        this.frameCount++;
+        this.fpsTime += dt;
+        if (this.fpsTime >= 1) {
+          this.currentFps = this.frameCount;
+          this.frameCount = 0;
+          this.fpsTime = 0;
+        }
+
+        requestAnimationFrame(this.gameLoop);
+      };
+
+      createWorker(faction, x, y) {
+        const e = this.world.createEntity();
+        e.addComponent(new Transform(x, y));
+        e.addComponent(new Velocity(0, 0));
+        e.addComponent(new Sprite(`worker_${faction}`, 32, 32));
+        e.addComponent(new Health(25, 0));
+        e.addComponent(new Unit('worker', faction, 80, 0, 0));
+        e.addComponent(new Morale());
+        return e;
+      }
+
+      createArcher(faction, x, y) {
+        const e = this.world.createEntity();
+        e.addComponent(new Transform(x, y));
+        e.addComponent(new Velocity(0, 0));
+        e.addComponent(new Sprite(`archer_${faction}`, 32, 32));
+        e.addComponent(new Health(20, 0));
+        e.addComponent(new Unit('archer', faction, 60, 80, 6));
+        e.addComponent(new Morale());
+        return e;
+      }
+
+      createSoldier(faction, x, y) {
+        const e = this.world.createEntity();
+        e.addComponent(new Transform(x, y));
+        e.addComponent(new Velocity(0, 0));
+        e.addComponent(new Sprite(`soldier_${faction}`, 32, 32));
+        e.addComponent(new Health(35, 2));
+        e.addComponent(new Unit('soldier', faction, 70, 16, 8));
+        e.addComponent(new Morale());
+        return e;
+      }
+
+      createTransport(faction, x, y) {
+        const e = this.world.createEntity();
+        e.addComponent(new Transform(x, y));
+        e.addComponent(new Velocity(0, 0));
+        e.addComponent(new Sprite(`transport_${faction}`, 48, 48));
+        e.addComponent(new Health(100, 3));
+        e.addComponent(new Unit('transport', faction, 80, 0, 0));
+        e.addComponent(new Naval('transport', 6));
+        return e;
+      }
+
+      createWarship(faction, x, y) {
+        const e = this.world.createEntity();
+        e.addComponent(new Transform(x, y));
+        e.addComponent(new Velocity(0, 0));
+        e.addComponent(new Sprite(`warship_${faction}`, 48, 48));
+        e.addComponent(new Health(200, 5));
+        e.addComponent(new Unit('warship', faction, 60, 200, 20));
+        e.addComponent(new Naval('warship', 0));
+        return e;
+      }
+
+      fireProjectile(attacker, target) {
+        const at = attacker.getComponent('transform');
+        const au = attacker.getComponent('unit');
+        const tt = target.getComponent('transform');
+        const th = target.getComponent('health');
+
+        if (!at || !tt || !th || !au) return 0;
+
+        const damage = au.attackDamage;
+        th.takeDamage(damage);
+
+        return damage;
+      }
+
+      createWrackage(entity) {
+        const t = entity.getComponent('transform');
+        const u = entity.getComponent('unit');
+
+        if (!t || !u) return null;
+
+        const e = this.world.createEntity();
+        e.addComponent(new Transform(t.x, t.y));
+        e.addComponent(new Sprite('wreckage', 48, 48));
+        e.addComponent(new Wreckage(u.type, u.faction));
+
+        return e;
+      }
+
+      recordDeath(faction) {
+        this.morale.recordDeath(faction);
+      }
+
+      recordVictory(faction, count) {
+        this.morale.recordVictory(faction, count);
+      }
+
+      getMoraleReport(faction) {
+        const units = this.world.getAllEntities().filter(e => {
+          const u = e.getComponent('unit');
+          return u && u.faction === faction;
+        });
+
+        const morale = units.map(e => e.getComponent('morale')).filter(m => m);
+
+        const avg = morale.length > 0 ? morale.reduce((s, m) => s + m.current, 0) / morale.length : 100;
+
+        return {
+          averageMorale: Math.round(avg),
+          unitCount: units.length,
+          state: morale[0]?.state || 'normal'
+        };
+      }
+    }
+
+    // Initialize
+    const canvas = document.getElementById('gameCanvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.gameManager = new GameManager(canvas);
+    gameManager.start();
+
+    // Create initial scene
+    document.getElementById('loadStatus').textContent = 'Creando unidades...';
+    gameManager.createWorker('solar_kingdom', 300, 300);
+    gameManager.createWorker('solar_kingdom', 350, 300);
+    gameManager.createSoldier('solar_kingdom', 400, 300);
+    gameManager.createSoldier('iron_horde', 800, 300);
+    gameManager.createArcher('solar_kingdom', 200, 300);
+
+    setTimeout(() => {
+      document.getElementById('loading').classList.add('done');
+    }, 1500);
+
+    // UI Updates
+    setInterval(() => {
+      document.getElementById('fps').textContent = gameManager.currentFps;
+      document.getElementById('debug-entities').textContent = gameManager.world.getAllEntities().length;
+
+      const solar = gameManager.getMoraleReport('solar_kingdom');
+      const iron = gameManager.getMoraleReport('iron_horde');
+
+      document.getElementById('solar-morale').textContent = `${solar.averageMorale} (${solar.state})`;
+      document.getElementById('iron-morale').textContent = `${iron.averageMorale} (${iron.state})`;
+    }, 100);
+
+    // Test functions
+    function testCreateArcher() {
+      gameManager.createArcher('solar_kingdom', Math.random() * 2000, Math.random() * 2000);
+    }
+
+    function testCreateSoldier() {
+      gameManager.createSoldier('iron_horde', Math.random() * 2000, Math.random() * 2000);
+    }
+
+    function testCreateTransport() {
+      gameManager.createTransport('solar_kingdom', Math.random() * 2000, Math.random() * 2000);
+    }
+
+    function testFireProjectile() {
+      const entities = gameManager.world.getAllEntities().filter(e => e.hasComponent('unit'));
+      if (entities.length >= 2) {
+        const dmg = gameManager.fireProjectile(entities[0], entities[1]);
+        console.log(`Proyectil: ${dmg} daño`);
+      }
+    }
+
+    function testCreateWrackage() {
+      const soldiers = gameManager.world.getAllEntities().filter(e => {
+        const u = e.getComponent('unit');
+        return u && u.type === 'soldier';
+      });
+      if (soldiers.length > 0) {
+        gameManager.createWrackage(soldiers[0]);
+        console.log('Wreckage creado');
+      }
+    }
+
+    function testMorale() {
+      gameManager.recordDeath('iron_horde');
+      gameManager.recordVictory('solar_kingdom', 2);
+      console.log(gameManager.getMoraleReport('solar_kingdom'));
+    }
+
+    function testNaval() {
+      gameManager.createWarship('iron_horde', 600, 600);
+      gameManager.createTransport('solar_kingdom', 500, 500);
+      console.log('Naves creadas');
+    }
+
+    function testAnimation() {
+      const units = gameManager.world.getAllEntities().filter(e => e.hasComponent('unit'));
+      if (units.length > 0) {
+        const v = units[0].getComponent('velocity');
+        v.vx = (Math.random() - 0.5) * 200;
+        v.vy = (Math.random() - 0.5) * 200;
+      }
+    }
+
+    function testPathfind() {
+      gameManager.renderer.cameraX = 1000;
+      gameManager.renderer.cameraY = 1000;
+      console.log('Camera centrada');
+    }
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
